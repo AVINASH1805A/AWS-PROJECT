@@ -120,8 +120,8 @@ Open your browser at `http://localhost:3000`.
    ```
 3. **Clone & Run Initial Deployment**:
    ```bash
-   git clone -b develop https://github.com/<your-username>/branchflow-app.git
-   cd branchflow-app
+   git clone -b develop https://github.com/AVINASH1805A/AWS-PROJECT.git
+   cd AWS-PROJECT
    chmod +x deploy.sh
    ./deploy.sh develop
    ```
@@ -143,8 +143,8 @@ Open your browser at `http://localhost:3000`.
    ssh -i ~/.ssh/branchflow-key.pem ubuntu@<prod-instance-public-ip>
    
    # If cloning for the first time:
-   git clone -b main https://github.com/<your-username>/branchflow-app.git
-   cd branchflow-app
+   git clone -b main https://github.com/AVINASH1805A/AWS-PROJECT.git
+   cd AWS-PROJECT
    chmod +x deploy.sh
    ./deploy.sh main
    ```
