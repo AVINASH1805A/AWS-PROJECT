@@ -1,0 +1,27 @@
+{
+  "name": "branchflow-app",
+  "version": "1.0.0",
+  "description": "An Agile-Governed Automated Release Pipeline for Dev-to-Production Deployment of a Cloud Web Application on AWS EC2",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.500.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0"
+  },
+  "keywords": [
+    "aws",
+    "ec2",
+    "s3",
+    "cloudwatch",
+    "agile",
+    "release-pipeline"
+  ],
+  "author": "Avinash Agarwal",
+  "license": "MIT"
+}
