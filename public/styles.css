@@ -3,23 +3,23 @@
    ========================================================================== */
 
 :root {
-  --bg-dark: #0a1118;
-  --bg-card: rgba(15, 23, 36, 0.82);
-  --bg-card-hover: rgba(22, 34, 52, 0.90);
-  --border-light: rgba(212, 175, 55, 0.15);
-  --border-glow: rgba(20, 184, 166, 0.35);
+  --bg-dark: #0b0f17;
+  --bg-card: rgba(17, 24, 39, 0.85);
+  --bg-card-hover: rgba(30, 41, 59, 0.92);
+  --border-light: rgba(59, 130, 246, 0.18);
+  --border-glow: rgba(14, 165, 233, 0.38);
 
-  /* Alexandria Palette Tokens: Royal Navy, Aegean Teal, Antique Gold, Terracotta Coral */
-  --accent-primary: #0284c7;
-  --accent-primary-hover: #0369a1;
-  --accent-cyan: #14b8a6;
+  /* Civic Pulse Design System: Pulse Cobalt, Signal Cyan, Vital Mint, Alert Amber & Red */
+  --accent-primary: #2563eb;
+  --accent-primary-hover: #1d4ed8;
+  --accent-cyan: #06b6d4;
   --accent-emerald: #10b981;
-  --accent-amber: #d4af37;
-  --accent-rose: #e11d48;
+  --accent-amber: #f59e0b;
+  --accent-rose: #ef4444;
 
   --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
 
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
   --radius-sm: 8px;
@@ -27,9 +27,9 @@
   --radius-lg: 18px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 25px rgba(20, 184, 166, 0.25);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.65), 0 8px 10px -6px rgba(0, 0, 0, 0.65);
+  --shadow-glow: 0 0 25px rgba(37, 99, 235, 0.3);
 }
 
 * {
@@ -149,7 +149,7 @@ body {
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  background: linear-gradient(90deg, #ffffff, #fef08a, #7dd3fc);
+  background: linear-gradient(90deg, #ffffff, #60a5fa, #38bdf8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
