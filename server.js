@@ -9,7 +9,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
+const AWS_REGION = process.env.AWS_REGION || 'ap-southeast-2';
 const BUCKET_NAME = process.env.S3_BUCKET_NAME || 'branchflow-backups-avinash24';
 const DYNAMO_TABLE = process.env.DYNAMO_TABLE || 'BranchFlowTasks';
 
