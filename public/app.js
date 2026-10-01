@@ -69,6 +69,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           s3StatusText.textContent = 'Local Sync Mode';
         }
+
+        const dynamoStatusText = document.getElementById('dynamoStatusText');
+        const ssmStatusText = document.getElementById('ssmStatusText');
+        if (dynamoStatusText) {
+          dynamoStatusText.textContent = data.aws.dynamoClientConfigured ? 'DynamoDB Active' : 'DynamoDB Ready';
+        }
+        if (ssmStatusText) {
+          ssmStatusText.textContent = data.aws.ssmClientConfigured ? 'SSM Active' : 'SSM Configured';
+        }
       }
     } catch (err) {
       serverUptime.textContent = 'Offline';

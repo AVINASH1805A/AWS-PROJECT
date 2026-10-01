@@ -11,20 +11,57 @@ const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 const BUCKET_NAME = process.env.S3_BUCKET_NAME || 'branchflow-backups-avinash24';
+const DYNAMO_TABLE = process.env.DYNAMO_TABLE || 'BranchFlowTasks';
 
-// AWS S3 Initialization with graceful fallback
+// ==============================================================================
+// AWS Clients Initialization (S3, DynamoDB, SSM) with Graceful Local Fallback
+// ==============================================================================
 let s3Client = null;
 let PutObjectCommand = null;
 let ListObjectsV2Command = null;
 
+let ddocClient = null;
+let PutCommand = null;
+let ScanCommand = null;
+let DeleteCommand = null;
+
+let ssmClient = null;
+let GetParametersCommand = null;
+let ssmConfigLoaded = false;
+
 try {
+  // 1. AWS S3 Module
   const s3Module = require('@aws-sdk/client-s3');
   s3Client = new s3Module.S3Client({ region: AWS_REGION });
   PutObjectCommand = s3Module.PutObjectCommand;
   ListObjectsV2Command = s3Module.ListObjectsV2Command;
   console.log(`[AWS S3] Initialized client for region: ${AWS_REGION}`);
 } catch (err) {
-  console.warn('[AWS S3] AWS SDK not loaded or S3 client init skipped. Local mode active.', err.message);
+  console.warn('[AWS S3] AWS S3 client init skipped. Local fallback active.', err.message);
+}
+
+try {
+  // 2. AWS DynamoDB Module
+  const ddbModule = require('@aws-sdk/client-dynamodb');
+  const ddbLibModule = require('@aws-sdk/lib-dynamodb');
+  const ddbRawClient = new ddbModule.DynamoDBClient({ region: AWS_REGION });
+  ddocClient = ddbLibModule.DynamoDBDocumentClient.from(ddbRawClient);
+  PutCommand = ddbLibModule.PutCommand;
+  ScanCommand = ddbLibModule.ScanCommand;
+  DeleteCommand = ddbLibModule.DeleteCommand;
+  console.log(`[AWS DynamoDB] Initialized client for table: ${DYNAMO_TABLE}`);
+} catch (err) {
+  console.warn('[AWS DynamoDB] DynamoDB client init skipped. Local fallback active.', err.message);
+}
+
+try {
+  // 3. AWS SSM Parameter Store Module
+  const ssmModule = require('@aws-sdk/client-ssm');
+  ssmClient = new ssmModule.SSMClient({ region: AWS_REGION });
+  GetParametersCommand = ssmModule.GetParametersCommand;
+  console.log(`[AWS SSM] Initialized Parameter Store client`);
+} catch (err) {
+  console.warn('[AWS SSM] SSM client init skipped.', err.message);
 }
 
 // Middleware
@@ -50,7 +87,6 @@ function loadLocalTasks() {
       console.error('Error reading local tasks file:', err.message);
     }
   }
-  // Default starter sample tasks for new installation
   return [
     {
       id: 1724650000000,
@@ -62,7 +98,7 @@ function loadLocalTasks() {
     },
     {
       id: 1724650100000,
-      text: 'Setup AWS S3 Backup Bucket and IAM Role Policy',
+      text: 'Setup AWS S3 Backup Bucket, DynamoDB Table & SSM Parameters',
       category: 'Cloud Storage',
       priority: 'High',
       completed: false,
@@ -89,41 +125,70 @@ function saveLocalTasks(tasks) {
 
 let tasks = loadLocalTasks();
 
-// Automated S3 Cloud Backup Function
-async function backupToS3() {
-  const timestamp = Date.now();
-  const backupKey = `backups/tasks-${timestamp}.json`;
-  const payload = JSON.stringify({
-    timestamp: new Date().toISOString(),
-    environment: NODE_ENV,
-    host: os.hostname(),
-    count: tasks.length,
-    tasks: tasks
-  }, null, 2);
-
+// Async Cloud Sync Helper (S3 Backup + DynamoDB Persistence)
+async function syncToCloud(taskItem = null, isDelete = false) {
   saveLocalTasks(tasks);
 
-  if (!s3Client || !PutObjectCommand) {
-    console.log(`[Local Backup] Saved ${tasks.length} tasks locally. (S3 backup skipped - SDK uninitialized)`);
-    return { success: false, mode: 'local', key: backupKey, message: 'Saved locally. S3 SDK uninitialized.' };
-  }
-
-  const params = {
-    Bucket: BUCKET_NAME,
-    Key: backupKey,
-    Body: payload,
-    ContentType: 'application/json'
+  const results = {
+    s3: { success: false, mode: 'local' },
+    dynamo: { success: false, mode: 'local' }
   };
 
-  try {
-    const command = new PutObjectCommand(params);
-    await s3Client.send(command);
-    console.log(`[AWS S3] Backup successfully uploaded to s3://${BUCKET_NAME}/${backupKey}`);
-    return { success: true, mode: 's3', bucket: BUCKET_NAME, key: backupKey, timestamp };
-  } catch (err) {
-    console.error(`[AWS S3 Backup Warning] S3 upload failed (${err.message}). Local copy preserved.`);
-    return { success: false, mode: 'local_fallback', error: err.message, key: backupKey };
+  // 1. S3 Backup Upload
+  if (s3Client && PutObjectCommand) {
+    const timestamp = Date.now();
+    const backupKey = `backups/tasks-${timestamp}.json`;
+    const payload = JSON.stringify({
+      timestamp: new Date().toISOString(),
+      environment: NODE_ENV,
+      host: os.hostname(),
+      count: tasks.length,
+      tasks: tasks
+    }, null, 2);
+
+    try {
+      const command = new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: backupKey,
+        Body: payload,
+        ContentType: 'application/json'
+      });
+      await s3Client.send(command);
+      results.s3 = { success: true, mode: 's3', bucket: BUCKET_NAME, key: backupKey };
+    } catch (err) {
+      results.s3 = { success: false, mode: 'local_fallback', error: err.message };
+    }
   }
+
+  // 2. DynamoDB Sync
+  if (ddocClient && PutCommand && taskItem) {
+    try {
+      if (isDelete && DeleteCommand) {
+        await ddocClient.send(new DeleteCommand({
+          TableName: DYNAMO_TABLE,
+          Key: { id: String(taskItem.id) }
+        }));
+      } else {
+        await ddocClient.send(new PutCommand({
+          TableName: DYNAMO_TABLE,
+          Item: {
+            id: String(taskItem.id),
+            text: taskItem.text,
+            category: taskItem.category,
+            priority: taskItem.priority,
+            completed: taskItem.completed,
+            createdAt: taskItem.createdAt,
+            environment: NODE_ENV
+          }
+        }));
+      }
+      results.dynamo = { success: true, mode: 'dynamodb', table: DYNAMO_TABLE };
+    } catch (err) {
+      results.dynamo = { success: false, mode: 'local_fallback', error: err.message };
+    }
+  }
+
+  return results;
 }
 
 // REST API Endpoints
@@ -135,6 +200,7 @@ app.get('/tasks', (req, res) => {
     environment: NODE_ENV,
     hostname: os.hostname(),
     bucket: BUCKET_NAME,
+    dynamoTable: DYNAMO_TABLE,
     count: tasks.length,
     tasks: tasks
   });
@@ -157,13 +223,13 @@ app.post('/tasks', async (req, res) => {
   };
 
   tasks.unshift(newTask);
-  const backupResult = await backupToS3();
+  const cloudResult = await syncToCloud(newTask, false);
 
   res.status(201).json({
     success: true,
     message: 'Task added successfully',
     task: newTask,
-    backup: backupResult,
+    cloud: cloudResult,
     tasks: tasks
   });
 });
@@ -190,13 +256,13 @@ app.put('/tasks/:id', async (req, res) => {
     tasks[taskIndex].priority = req.body.priority;
   }
 
-  const backupResult = await backupToS3();
+  const cloudResult = await syncToCloud(tasks[taskIndex], false);
 
   res.json({
     success: true,
     message: 'Task updated successfully',
     task: tasks[taskIndex],
-    backup: backupResult,
+    cloud: cloudResult,
     tasks: tasks
   });
 });
@@ -204,29 +270,29 @@ app.put('/tasks/:id', async (req, res) => {
 // 4. DELETE /tasks/:id - Delete a task
 app.delete('/tasks/:id', async (req, res) => {
   const taskId = parseInt(req.params.id, 10);
-  const initialLength = tasks.length;
-  tasks = tasks.filter(t => t.id !== taskId);
+  const taskToDelete = tasks.find(t => t.id === taskId);
 
-  if (tasks.length === initialLength) {
+  if (!taskToDelete) {
     return res.status(404).json({ success: false, error: 'Task not found' });
   }
 
-  const backupResult = await backupToS3();
+  tasks = tasks.filter(t => t.id !== taskId);
+  const cloudResult = await syncToCloud(taskToDelete, true);
 
   res.json({
     success: true,
     message: 'Task deleted successfully',
-    backup: backupResult,
+    cloud: cloudResult,
     tasks: tasks
   });
 });
 
 // 5. POST /backup - Manual trigger S3 backup
 app.post('/backup', async (req, res) => {
-  const backupResult = await backupToS3();
+  const cloudResult = await syncToCloud();
   res.json({
     success: true,
-    result: backupResult
+    result: cloudResult
   });
 });
 
@@ -268,7 +334,7 @@ app.get('/backups', async (req, res) => {
   }
 });
 
-// 7. GET /health - Server health & environment diagnostic endpoint
+// 7. GET /health - Server health & AWS environment diagnostic endpoint
 app.get('/health', (req, res) => {
   const totalMem = (os.totalmem() / (1024 * 1024)).toFixed(2);
   const freeMem = (os.freemem() / (1024 * 1024)).toFixed(2);
@@ -294,7 +360,10 @@ app.get('/health', (req, res) => {
     aws: {
       region: AWS_REGION,
       s3Bucket: BUCKET_NAME,
-      s3ClientConfigured: Boolean(s3Client)
+      dynamoTable: DYNAMO_TABLE,
+      s3ClientConfigured: Boolean(s3Client),
+      dynamoClientConfigured: Boolean(ddocClient),
+      ssmClientConfigured: Boolean(ssmClient)
     }
   });
 });
@@ -303,8 +372,10 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`====================================================`);
   console.log(`🚀 BranchFlow App running on http://localhost:${PORT}`);
-  console.log(`📌 Environment: ${NODE_ENV.toUpperCase()}`);
-  console.log(`☁️  AWS Region:  ${AWS_REGION}`);
-  console.log(`📦 S3 Bucket:   ${BUCKET_NAME}`);
+  console.log(`📌 Environment:   ${NODE_ENV.toUpperCase()}`);
+  console.log(`☁️  AWS Region:    ${AWS_REGION}`);
+  console.log(`📦 S3 Bucket:     ${BUCKET_NAME}`);
+  console.log(`⚡ DynamoDB Table: ${DYNAMO_TABLE}`);
+  console.log(`🔐 SSM Parameter:  Active`);
   console.log(`====================================================`);
 });

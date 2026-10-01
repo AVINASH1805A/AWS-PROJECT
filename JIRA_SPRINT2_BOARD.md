@@ -19,6 +19,8 @@ The goal of Sprint 2 is to enhance cloud infrastructure governance by introducin
 | **STORY-203** | *As a System Administrator*, I want an AWS CloudWatch Alarm tracking EC2 CPU utilization (>70%) with SNS Email alerts so performance bottlenecks are detected proactively. | **High** | 5 | **Done** | Prod EC2 |
 | **STORY-204** | *As a Product Owner*, I want an environment indicator (`DEV` vs `PROD`) and system diagnostics UI component so release status is visually transparent to team members. | **Medium** | 2 | **Done** | Frontend |
 | **STORY-205** | *As a Security Analyst*, I want EC2 instances to use IAM Roles (`EC2-S3-Access`) instead of hardcoded API access keys for secure AWS resource access. | **High** | 3 | **Done** | AWS IAM |
+| **STORY-206** | *As a Database Administrator*, I want real-time task records synchronized to an AWS DynamoDB NoSQL table (`BranchFlowTasks`) for managed cloud persistence. | **High** | 5 | **Done** | AWS DynamoDB |
+| **STORY-207** | *As a Cloud Security Engineer*, I want application environment variables loaded from AWS SSM Parameter Store for centralized configuration management. | **Medium** | 3 | **Done** | AWS SSM |
 
 ---
 

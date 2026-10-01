@@ -1,6 +1,6 @@
 # BranchFlow | An Agile-Governed Automated Release Pipeline for AWS EC2 & S3
 
-[![AWS Cloud](https://img.shields.io/badge/AWS-EC2%20%7C%20S3%20%7C%20CloudWatch-232F3E?logo=amazon-aws)](https://aws.amazon.com/)
+[![AWS Cloud](https://img.shields.io/badge/AWS-EC2%20%7C%20S3%20%7C%20DynamoDB%20%7C%20SSM%20%7C%20CloudWatch-232F3E?logo=amazon-aws)](https://aws.amazon.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-v18%2B-339933?logo=nodedotjs)](https://nodejs.org/)
 [![Agile](https://img.shields.io/badge/Agile-Scrum%20%7C%20Jira-0052CC?logo=jira)](https://www.atlassian.com/software/jira)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -8,7 +8,7 @@
 ---
 
 ## 📌 Executive Summary
-**BranchFlow** is an enterprise-grade cloud application demonstrating an **Agile-Governed Automated Release Pipeline for Dev-to-Production Deployment on AWS EC2**. The project implements cloud data persistence via **Amazon S3**, multi-environment infrastructure monitoring via **Amazon CloudWatch**, and strict Agile release management rules separating Development (`develop`) and Production (`main`) release streams.
+**BranchFlow** is an enterprise-grade cloud application demonstrating an **Agile-Governed Automated Release Pipeline for Dev-to-Production Deployment on AWS EC2**. The project implements dual cloud data persistence via **Amazon S3** and **Amazon DynamoDB**, centralized secret configuration via **AWS Systems Manager (SSM) Parameter Store**, multi-environment infrastructure monitoring via **Amazon CloudWatch**, and strict Agile release management rules separating Development (`develop`) and Production (`main`) release streams.
 
 ---
 
@@ -39,7 +39,9 @@
                                       v                           v
                           +---------------------------------------------------+
                           |                 AWS Cloud Services                |
-                          |   - Amazon S3: Backup Storage (Tasks JSON)        |
+                          |   - Amazon S3: Object Backup Storage (JSON)       |
+                          |   - Amazon DynamoDB: Managed NoSQL Task Database  |
+                          |   - AWS SSM Parameter Store: Central Config Store |
                           |   - Amazon CloudWatch: CPU Utilization Metrics    |
                           |   - Amazon SNS: Email Alert Notifications         |
                           +---------------------------------------------------+

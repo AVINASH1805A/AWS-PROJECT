@@ -207,6 +207,18 @@ body {
   color: #c7d2fe;
 }
 
+.dynamo-badge {
+  background: rgba(6, 182, 212, 0.12);
+  border-color: rgba(6, 182, 212, 0.3);
+  color: #a5f3fc;
+}
+
+.ssm-badge {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.3);
+  color: #e9d5ff;
+}
+
 /* Metrics Cards Grid */
 .metrics-grid {
   display: grid;

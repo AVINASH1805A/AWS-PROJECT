@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BranchFlow Project Technical Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            background: #ffffff;
+            line-height: 1.6;
+            padding: 20px;
+            font-size: 13px;
+        }
+        h1 {
+            color: #1e3a8a;
+            font-size: 22px;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 8px;
+            margin-top: 0;
+        }
+        h2 {
+            color: #1e40af;
+            font-size: 16px;
+            margin-top: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 4px;
+        }
+        h3 {
+            color: #1d4ed8;
+            font-size: 14px;
+            margin-top: 14px;
+        }
+        p {
+            margin: 8px 0;
+        }
+        code {
+            background-color: #f3f4f6;
+            color: #b91c1c;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 11px;
+        }
+        pre {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 10.5px;
+            line-height: 1.4;
+        }
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        table.styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 11.5px;
+        }
+        table.styled-table th, table.styled-table td {
+            border: 1px solid #d1d5db;
+            padding: 6px 10px;
+            text-align: left;
+        }
+        table.styled-table th {
+            background-color: #f3f4f6;
+            color: #111827;
+            font-weight: 600;
+        }
+        table.styled-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        ul, ol {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+        li {
+            margin-bottom: 3px;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #e5e7eb;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>Project Technical Report</h1>
+<h2>Title</h2>
+<strong>An Agile-Governed Automated Release Pipeline for Dev-to-Production Deployment of a Cloud Web Application on AWS EC2</strong>
+<ul><li><strong>Author</strong>: Avinash Agarwal</li><li><strong>Repository</strong>: [https://github.com/AVINASH1805A/AWS-PROJECT](https://github.com/AVINASH1805A/AWS-PROJECT)</li><li><strong>Domain</strong>: Cloud Computing, DevOps, Software Engineering & Agile Release Governance</li><li><strong>Primary AWS Services</strong>: Amazon EC2, Amazon S3, Amazon DynamoDB, AWS SSM Parameter Store, AWS IAM, Amazon CloudWatch, Amazon SNS</li><li><strong>Tech Stack</strong>: Node.js, Express, HTML5, CSS3 (Glassmorphic Theme), JavaScript (ES6+), Git, Shell Scripting</li></ul>
+<hr>
+<h2>Executive Summary</h2>
+This project presents an enterprise-grade cloud application and automated release deployment pipeline built on Amazon Web Services (AWS). Titled <strong>BranchFlow</strong>, the system combines a modern full-stack web application with dual cloud data persistence (<strong>Amazon S3</strong> & <strong>Amazon DynamoDB</strong>), centralized configuration governance (<strong>AWS Systems Manager Parameter Store</strong>), infrastructure health monitoring (<strong>Amazon CloudWatch</strong> & <strong>Amazon SNS</strong>), keyless security authorization (<strong>AWS IAM</strong>), and strict Agile release governance across isolated <strong>Development</strong> and <strong>Production</strong> cloud environments on <strong>Amazon EC2</strong>.
+<p>The release workflow adheres to dual-branch Git governance (<code>develop</code> and <code>main</code>). Deployments to EC2 servers are fully automated using a custom shell script (<code>deploy.sh</code>), eliminating manual configuration errors and establishing zero-downtime release practices.</p>
+<hr>
+<h2>System Architecture</h2>
+<pre><code>+-----------------------------------------+
+<table class="styled-table"><thead><tr><th></th><th>Agile Developer Workstation</th></tr></thead><tbody><tr><td></td><td>(Feature Branch: feature/s3-backup)</td></tr></tbody></table>
+                                    +-----------------------------------------+
+<table class="styled-table"><thead><tr><th></th></tr></thead><tbody></tbody></table>
+                                                         v
+                                           [ Git Push & Merge to develop ]
+<table class="styled-table"><thead><tr><th></th></tr></thead><tbody></tbody></table>
+                                                         v
+                                    +-----------------------------------------+
+<table class="styled-table"><thead><tr><th></th><th>GitHub Repository</th></tr></thead><tbody><tr><td></td><td>Branches:  develop</td><td>main</td></tr></tbody></table>
+                                    +-----------------------------------------+
+<table class="styled-table"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
+               ./deploy.sh develop        v                         v       ./deploy.sh main
+                          +-----------------------+   +-----------------------+
+<table class="styled-table"><thead><tr><th></th><th>Dev EC2 Instance</th><th></th><th>Prod EC2 Instance</th></tr></thead><tbody><tr><td></td><td>(Port 3000 / DEV)</td><td></td><td>(Port 3000 / PROD)</td></tr></tbody></table>
+                          +-----------------------+   +-----------------------+
+<table class="styled-table"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
+                                      |                           | CloudWatch CPU Alarm (>70%)
+                                      v                           v
+                          +---------------------------------------------------+
+<table class="styled-table"><thead><tr><th></th><th>AWS Cloud Services</th></tr></thead><tbody><tr><td></td><td>- Amazon S3: Object Backup Storage (JSON)</td></tr><tr><td></td><td>- Amazon DynamoDB: Managed NoSQL Task Database</td></tr><tr><td></td><td>- AWS SSM Parameter Store: Central Config Store</td></tr><tr><td></td><td>- Amazon CloudWatch: CPU Utilization Metrics</td></tr><tr><td></td><td>- Amazon SNS: Email Alert Notifications</td></tr></tbody></table>
+                          +---------------------------------------------------+</code></pre>
+<hr>
+<h2>Key Modules & Implementation Details</h2>
+<h3>1. Web Application Core & Cloud Persistence Engine (<code>server.js</code>)</h3>
+* <strong>Backend Framework</strong>: Node.js with Express framework.
+* <strong>API Endpoints</strong>:
+  * <code>GET /tasks</code>: Retrieves all active tasks and environment metadata.
+  * <code>POST /tasks</code>: Adds a new task and triggers automated S3 backup & DynamoDB sync.
+  * <code>PUT /tasks/:id</code>: Updates task completion status or details and syncs to cloud.
+  * <code>DELETE /tasks/:id</code>: Deletes a task and updates S3 backup & DynamoDB.
+  * <code>POST /backup</code>: Manually triggers an instant S3 & DynamoDB cloud sync.
+  * <code>GET /backups</code>: Lists historical backup objects from S3.
+  * <code>GET /health</code>: Diagnostic endpoint returning OS memory, CPU load, uptime, S3, DynamoDB, and SSM connectivity.
+* <strong>AWS Cloud Integration Engine</strong>:
+  * <strong>AWS S3 Backup Engine</strong>: Utilizes <code>@aws-sdk/client-s3</code> v3 library. Asynchronously generates timestamped JSON files under <code>s3://branchflow-backups-avinash24/backups/tasks-<timestamp>.json</code>.
+  * <strong>AWS DynamoDB NoSQL Database</strong>: Utilizes <code>@aws-sdk/client-dynamodb</code> and <code>@aws-sdk/lib-dynamodb</code> to store live task items in the <code>BranchFlowTasks</code> table.
+  * <strong>AWS SSM Parameter Store</strong>: Utilizes <code>@aws-sdk/client-ssm</code> to retrieve central environment configurations.
+<h3>2. Modern Glassmorphic User Interface (<code>public/</code>)</h3>
+* Built with semantic HTML5, CSS design tokens, HSL color palettes, and glassmorphism backdrop filters.
+* Displays live metric counters (Total Tasks, In Progress, Completed, Cloud Sync Engine Status).
+* Features dynamic cloud status badges (<code>S3 Active</code>, <code>DynamoDB Active</code>, <code>SSM Configured</code>, <code>DEV</code> vs <code>PROD</code>).
+* Includes toast notification alerts confirming S3 cloud backup & DynamoDB sync completion.
+<h3>3. Automated Release Deployment Script (<code>deploy.sh</code>)</h3>
+* Executable shell script residing on EC2 instances (<code>chmod +x deploy.sh</code>).
+* Parameterized execution (<code>./deploy.sh develop</code> for Dev, <code>./deploy.sh main</code> for Prod).
+* Automates:
+  1. Git fetch and checkout of target branch.
+  2. Dependency installation (<code>npm install --production</code>).
+  3. Graceful termination of older node processes (<code>pkill -f</code>).
+  4. Background daemon startup (<code>nohup node server.js > app.log 2>&1 &</code>).
+  5. Deployment audit logging (<code>deploy.log</code>).
+<h3>4. Cloud Infrastructure & Security Governance</h3>
+* <strong>Amazon EC2</strong>:
+  * <code>dev-server</code> (Ubuntu 22.04 LTS, <code>t2.micro</code>): Dedicated to testing incoming <code>develop</code> releases.
+  * <code>prod-server</code> (Ubuntu 22.04 LTS, <code>t2.micro</code>): Dedicated to serving live <code>main</code> releases.
+* <strong>AWS IAM Role (<code>EC2-S3-Access</code>)</strong>:
+  * Grants <code>AmazonS3FullAccess</code> and DynamoDB/SSM permissions to EC2 instances using temporary AWS STS credentials.
+* <strong>EC2 Security Groups</strong>:
+  * Port 22 (SSH): Restricted terminal access.
+  * Port 3000 (Custom TCP): Web application access.
+<h3>5. Observability & Infrastructure Monitoring</h3>
+* <strong>Amazon CloudWatch Alarm (<code>prod-server-high-cpu-alarm</code>)</strong>:
+  * Monitors <code>CPUUtilization</code> metric on <code>prod-server</code>.
+  * Threshold: Triggered when CPU utilization exceeds 70% over a 5-minute evaluation period.
+* <strong>Amazon SNS (<code>ec2-high-cpu-alert</code>)</strong>:
+  * Sends automated email alerts to system operators upon alarm state transition.
+<hr>
+<h2>Agile Sprint 2 User Stories & Governance</h2>
+<table class="styled-table"><thead><tr><th>Story ID</th><th>User Story</th><th>Priority</th><th>Points</th><th>Status</th></tr></thead><tbody><tr><td><strong>STORY-201</strong></td><td><strong>AWS S3 Backup</strong>: Backup task changes to S3 automatically.</td><td>High</td><td>5</td><td><strong>Done</strong></td></tr><tr><td><strong>STORY-202</strong></td><td><strong>Release Script</strong>: Automate branch deployment on EC2 with <code>deploy.sh</code>.</td><td>High</td><td>3</td><td><strong>Done</strong></td></tr><tr><td><strong>STORY-203</strong></td><td><strong>CloudWatch Monitoring</strong>: Configure CPU >70% alarm with SNS email alerts.</td><td>High</td><td>5</td><td><strong>Done</strong></td></tr><tr><td><strong>STORY-204</strong></td><td><strong>Environment Diagnostics</strong>: Display DEV vs PROD badge and health statistics in UI.</td><td>Medium</td><td>2</td><td><strong>Done</strong></td></tr><tr><td><strong>STORY-205</strong></td><td><strong>Keyless IAM Security</strong>: Attach IAM Role <code>EC2-S3-Access</code> to EC2 instances.</td><td>High</td><td>3</td><td><strong>Done</strong></td></tr><tr><td><strong>STORY-206</strong></td><td><strong>AWS DynamoDB Sync</strong>: Synchronize tasks to <code>BranchFlowTasks</code> NoSQL table.</td><td>High</td><td>5</td><td><strong>Done</strong></td></tr><tr><td><strong>STORY-207</strong></td><td><strong>AWS SSM Parameter Store</strong>: Centralize environment parameters via SSM.</td><td>Medium</td><td>3</td><td><strong>Done</strong></td></tr></tbody></table>
+<hr>
+<h2>Conclusion</h2>
+The <strong>BranchFlow</strong> project successfully fulfills all requirements for an Agile-governed cloud release pipeline. By integrating AWS S3, AWS DynamoDB, AWS SSM Parameter Store, AWS CloudWatch, AWS SNS, AWS IAM, and shell script automation for EC2 deployments, the system provides a comprehensive, scalable, and secure cloud web application architecture suitable for production deployment.
+</body>
+</html>
