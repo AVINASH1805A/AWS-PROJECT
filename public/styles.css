@@ -3,22 +3,23 @@
    ========================================================================== */
 
 :root {
-  --bg-dark: #0b0f19;
-  --bg-card: rgba(18, 24, 38, 0.75);
-  --bg-card-hover: rgba(26, 35, 56, 0.85);
-  --border-light: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(99, 102, 241, 0.3);
+  --bg-dark: #0a1118;
+  --bg-card: rgba(15, 23, 36, 0.82);
+  --bg-card-hover: rgba(22, 34, 52, 0.90);
+  --border-light: rgba(212, 175, 55, 0.15);
+  --border-glow: rgba(20, 184, 166, 0.35);
 
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #4f46e5;
-  --accent-cyan: #06b6d4;
+  /* Alexandria Palette Tokens: Royal Navy, Aegean Teal, Antique Gold, Terracotta Coral */
+  --accent-primary: #0284c7;
+  --accent-primary-hover: #0369a1;
+  --accent-cyan: #14b8a6;
   --accent-emerald: #10b981;
-  --accent-amber: #f59e0b;
-  --accent-rose: #f43f5e;
+  --accent-amber: #d4af37;
+  --accent-rose: #e11d48;
 
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
 
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
   --radius-sm: 8px;
@@ -26,9 +27,9 @@
   --radius-lg: 18px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 25px rgba(20, 184, 166, 0.25);
 }
 
 * {
@@ -148,7 +149,7 @@ body {
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  background: linear-gradient(90deg, #ffffff, #c7d2fe);
+  background: linear-gradient(90deg, #ffffff, #fef08a, #7dd3fc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
