@@ -6,3 +6,4 @@ deploy.log
 data/tasks.json
 .DS_Store
 .Rhistory
+.chrome_user_data/
