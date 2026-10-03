@@ -78,22 +78,7 @@ try {
   console.warn('[AWS Lambda] Lambda client init skipped. Local serverless simulation active.', err.message);
 }
 
-// 5. Amazon Cognito Identity Provider Module
-let cognitoClient = null;
-let InitiateAuthCommand = null;
-let SignUpCommand = null;
-const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID || 'ap-southeast-2_BranchFlowPool';
-const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID || 'branchflow-client-app';
 
-try {
-  const cognitoModule = require('@aws-sdk/client-cognito-identity-provider');
-  cognitoClient = new cognitoModule.CognitoIdentityProviderClient({ region: AWS_REGION });
-  InitiateAuthCommand = cognitoModule.InitiateAuthCommand;
-  SignUpCommand = cognitoModule.SignUpCommand;
-  console.log(`[Amazon Cognito] Initialized client for User Pool: ${COGNITO_USER_POOL_ID}`);
-} catch (err) {
-  console.warn('[Amazon Cognito] Cognito client init skipped. Managed auth simulation active.', err.message);
-}
 
 // Middleware
 app.use(cors());
@@ -365,135 +350,6 @@ app.get('/backups', async (req, res) => {
   }
 });
 
-// ==============================================================================
-// 8. Amazon Cognito User Authentication Endpoints
-// ==============================================================================
-let activeSessions = new Map();
-let registeredUsers = [
-  { username: 'avinash', email: 'avinash@aws.cloud', role: 'DevOps Lead', fullName: 'Avinash Agarwal' },
-  { username: 'admin', email: 'admin@aws.cloud', role: 'Release Manager', fullName: 'Cloud Administrator' },
-  { username: 'architect', email: 'architect@aws.cloud', role: 'Cloud Solutions Architect', fullName: 'AWS Solutions Lead' }
-];
-
-// POST /auth/login - Authenticate user via Amazon Cognito
-app.post('/auth/login', async (req, res) => {
-  const { username, password } = req.body;
-  if (!username) {
-    return res.status(400).json({ success: false, error: 'Username or email is required' });
-  }
-
-  const cleanUser = username.trim().toLowerCase();
-  let userProfile = registeredUsers.find(u => u.username.toLowerCase() === cleanUser || u.email.toLowerCase() === cleanUser);
-
-  // If real Cognito client is available and client ID set, attempt real Cognito InitiateAuth
-  let cognitoAuthResult = null;
-  if (cognitoClient && InitiateAuthCommand && process.env.REAL_COGNITO === 'true') {
-    try {
-      const authCmd = new InitiateAuthCommand({
-        AuthFlow: 'USER_PASSWORD_AUTH',
-        ClientId: COGNITO_CLIENT_ID,
-        AuthParameters: {
-          USERNAME: cleanUser,
-          PASSWORD: password || 'DefaultPass@123'
-        }
-      });
-      const authResponse = await cognitoClient.send(authCmd);
-      cognitoAuthResult = authResponse.AuthenticationResult;
-    } catch (cogErr) {
-      console.warn('[Cognito Auth] AWS Cognito call failed, falling back to managed session:', cogErr.message);
-    }
-  }
-
-  if (!userProfile) {
-    userProfile = {
-      username: cleanUser,
-      email: `${cleanUser}@aws.cloud`,
-      role: 'DevOps Engineer',
-      fullName: cleanUser.charAt(0).toUpperCase() + cleanUser.slice(1)
-    };
-    registeredUsers.push(userProfile);
-  }
-
-  const token = 'cog-jwt-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
-  const sessionData = {
-    token,
-    user: userProfile,
-    authProvider: 'Amazon Cognito User Pool',
-    userPoolId: COGNITO_USER_POOL_ID,
-    clientId: COGNITO_CLIENT_ID,
-    region: AWS_REGION,
-    loginTime: new Date().toISOString()
-  };
-
-  activeSessions.set(token, sessionData);
-
-  res.json({
-    success: true,
-    message: `Authenticated successfully with Amazon Cognito`,
-    token,
-    user: userProfile,
-    cognito: {
-      provider: 'Amazon Cognito',
-      userPoolId: COGNITO_USER_POOL_ID,
-      clientId: COGNITO_CLIENT_ID,
-      region: AWS_REGION
-    }
-  });
-});
-
-// POST /auth/signup - Register new user
-app.post('/auth/signup', (req, res) => {
-  const { username, email, role, fullName } = req.body;
-  if (!username || !email) {
-    return res.status(400).json({ success: false, error: 'Username and email are required' });
-  }
-
-  const newUser = {
-    username: username.trim().toLowerCase(),
-    email: email.trim(),
-    role: role || 'DevOps Engineer',
-    fullName: fullName || username.trim()
-  };
-
-  registeredUsers.push(newUser);
-  res.status(201).json({
-    success: true,
-    message: 'User registered in Amazon Cognito User Pool successfully',
-    user: newUser
-  });
-});
-
-// GET /auth/me - Current user session
-app.get('/auth/me', (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.split(' ')[1];
-    if (activeSessions.has(token)) {
-      return res.json({ success: true, ...activeSessions.get(token) });
-    }
-  }
-
-  // Return default profile if unauthenticated
-  res.json({
-    success: false,
-    authenticated: false,
-    cognitoConfig: {
-      userPoolId: COGNITO_USER_POOL_ID,
-      clientId: COGNITO_CLIENT_ID,
-      region: AWS_REGION
-    }
-  });
-});
-
-// POST /auth/logout - End session
-app.post('/auth/logout', (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.split(' ')[1];
-    activeSessions.delete(token);
-  }
-  res.json({ success: true, message: 'Logged out from Amazon Cognito session' });
-});
 
 // ==============================================================================
 // 9. AWS Lambda Nightly Cleanup Trigger Endpoint
@@ -610,12 +466,10 @@ app.get('/health', (req, res) => {
       s3Bucket: BUCKET_NAME,
       dynamoTable: DYNAMO_TABLE,
       lambdaFunction: LAMBDA_CLEANUP_FUNCTION,
-      cognitoUserPool: COGNITO_USER_POOL_ID,
       s3ClientConfigured: Boolean(s3Client),
       dynamoClientConfigured: Boolean(ddocClient),
       ssmClientConfigured: Boolean(ssmClient),
-      lambdaClientConfigured: Boolean(lambdaClient),
-      cognitoClientConfigured: Boolean(cognitoClient)
+      lambdaClientConfigured: Boolean(lambdaClient)
     }
   });
 });
@@ -630,6 +484,5 @@ app.listen(PORT, () => {
   console.log(`⚡ DynamoDB Table:    ${DYNAMO_TABLE}`);
   console.log(`🔐 SSM Parameter:     Active`);
   console.log(`⚡ AWS Lambda:        ${LAMBDA_CLEANUP_FUNCTION}`);
-  console.log(`🔒 Amazon Cognito:    ${COGNITO_USER_POOL_ID}`);
   console.log(`====================================================`);
 });

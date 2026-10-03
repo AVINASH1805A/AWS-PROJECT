@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const dynamoStatusText = document.getElementById('dynamoStatusText');
         const ssmStatusText = document.getElementById('ssmStatusText');
         const lambdaStatusText = document.getElementById('lambdaStatusText');
-        const cognitoStatusText = document.getElementById('cognitoStatusText');
 
         if (dynamoStatusText) {
           dynamoStatusText.textContent = data.aws.dynamoClientConfigured ? 'DynamoDB Active' : 'DynamoDB Ready';
@@ -83,9 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (lambdaStatusText) {
           lambdaStatusText.textContent = data.aws.lambdaClientConfigured ? 'Lambda Active' : 'Lambda Ready';
-        }
-        if (cognitoStatusText) {
-          cognitoStatusText.textContent = data.aws.cognitoClientConfigured ? 'Cognito Active' : 'Cognito Ready';
         }
       }
     } catch (err) {
@@ -277,169 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==============================================================================
-  // Amazon Cognito User Authentication Logic
-  // ==============================================================================
-  const authModal = document.getElementById('authModal');
-  const openAuthModalBtn = document.getElementById('openAuthModalBtn');
-  const closeAuthModalBtn = document.getElementById('closeAuthModalBtn');
-  const userAuthWidget = document.getElementById('userAuthWidget');
-  const tabSignIn = document.getElementById('tabSignIn');
-  const tabSignUp = document.getElementById('tabSignUp');
-  const signInForm = document.getElementById('signInForm');
-  const signUpForm = document.getElementById('signUpForm');
-  const profileChips = document.querySelectorAll('.profile-chip');
-
-  let currentUser = JSON.parse(localStorage.getItem('cognito_user') || 'null');
-  let currentToken = localStorage.getItem('cognito_token') || null;
-
-  function renderAuthWidget() {
-    if (!userAuthWidget) return;
-
-    if (currentUser) {
-      const initial = (currentUser.fullName || currentUser.username || 'U').charAt(0).toUpperCase();
-      userAuthWidget.innerHTML = `
-        <div class="user-profile-pill">
-          <div class="user-avatar-small">${initial}</div>
-          <div class="user-info-text">
-            <span class="user-name">${escapeHtml(currentUser.fullName || currentUser.username)}</span>
-            <span class="user-role-badge">${escapeHtml(currentUser.role || 'DevOps Engineer')}</span>
-          </div>
-          <button class="btn-logout" id="logoutBtn" title="Sign Out from Cognito">Sign Out</button>
-        </div>
-      `;
-
-      const logoutBtn = document.getElementById('logoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', handleLogout);
-      }
-    } else {
-      userAuthWidget.innerHTML = `
-        <button class="btn btn-auth" id="openAuthModalBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          <span>Sign In (Cognito)</span>
-        </button>
-      `;
-      const btn = document.getElementById('openAuthModalBtn');
-      if (btn) {
-        btn.addEventListener('click', () => authModal.classList.remove('hidden'));
-      }
-    }
-  }
-
-  // Open & Close Modal
-  if (openAuthModalBtn) {
-    openAuthModalBtn.addEventListener('click', () => authModal.classList.remove('hidden'));
-  }
-  if (closeAuthModalBtn) {
-    closeAuthModalBtn.addEventListener('click', () => authModal.classList.add('hidden'));
-  }
-
-  // Tab switching
-  if (tabSignIn && tabSignUp) {
-    tabSignIn.addEventListener('click', () => {
-      tabSignIn.classList.add('active');
-      tabSignUp.classList.remove('active');
-      signInForm.classList.remove('hidden');
-      signUpForm.classList.add('hidden');
-    });
-
-    tabSignUp.addEventListener('click', () => {
-      tabSignUp.classList.add('active');
-      tabSignIn.classList.remove('active');
-      signUpForm.classList.remove('hidden');
-      signInForm.classList.add('hidden');
-    });
-  }
-
-  // Quick Sign In Profile Chips
-  profileChips.forEach(chip => {
-    chip.addEventListener('click', async () => {
-      const username = chip.dataset.user;
-      await performLogin(username, 'AwsProject@2026');
-    });
-  });
-
-  // Handle Sign In Submit
-  if (signInForm) {
-    signInForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('authUsername').value;
-      const password = document.getElementById('authPassword').value;
-      await performLogin(username, password);
-    });
-  }
-
-  // Handle Sign Up Submit
-  if (signUpForm) {
-    signUpForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('newUsername').value;
-      const email = document.getElementById('newEmail').value;
-      const role = document.getElementById('newRole').value;
-      const password = document.getElementById('newPassword').value;
-
-      try {
-        const res = await fetch('/auth/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, role, password })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast(`Account registered in Amazon Cognito User Pool!`, 'success');
-          await performLogin(username, password);
-        } else {
-          showToast(data.error || 'Registration failed', 'warning');
-        }
-      } catch (err) {
-        showToast('Cognito sign up service unavailable', 'warning');
-      }
-    });
-  }
-
-  async function performLogin(username, password) {
-    try {
-      const res = await fetch('/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await res.json();
-      if (data.success) {
-        currentUser = data.user;
-        currentToken = data.token;
-        localStorage.setItem('cognito_user', JSON.stringify(currentUser));
-        localStorage.setItem('cognito_token', currentToken);
-        renderAuthWidget();
-        authModal.classList.add('hidden');
-        showToast(`Authenticated via Amazon Cognito as ${currentUser.fullName} (${currentUser.role})`, 'success');
-      } else {
-        showToast(data.error || 'Authentication failed', 'warning');
-      }
-    } catch (err) {
-      showToast('Cognito service error during login', 'warning');
-    }
-  }
-
-  async function handleLogout() {
-    try {
-      await fetch('/auth/logout', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${currentToken}` }
-      });
-    } catch (_) {}
-    currentUser = null;
-    currentToken = null;
-    localStorage.removeItem('cognito_user');
-    localStorage.removeItem('cognito_token');
-    renderAuthWidget();
-    showToast('Signed out from Amazon Cognito session', 'info');
-  }
-
-  // ==============================================================================
   // AWS Lambda Nightly Cleanup Invocation Logic
   // ==============================================================================
   const triggerLambdaBtn = document.getElementById('triggerLambdaBtn');
@@ -556,7 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Initialize
-  renderAuthWidget();
   fetchTasks();
   fetchHealth();
   setInterval(fetchHealth, 10000);

@@ -224,12 +224,6 @@ body {
   color: #c2410c;
 }
 
-.cognito-badge {
-  background: #eef2ff;
-  border-color: #c7d2fe;
-  color: #4338ca;
-}
-
 /* Metrics Cards Grid */
 .metrics-grid {
   display: grid;
@@ -402,86 +396,8 @@ body {
   filter: brightness(1.08);
 }
 
-.btn-auth {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: var(--text-primary);
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.45rem 0.9rem;
-  border-radius: var(--radius-full);
-}
-
-.btn-auth:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
-}
-
 .btn-full {
   width: 100%;
-}
-
-.user-auth-widget {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.user-profile-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-full);
-}
-
-.user-avatar-small {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4338ca, #2563eb);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.user-info-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.user-name {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.1;
-}
-
-.user-role-badge {
-  font-size: 0.65rem;
-  color: #4338ca;
-  font-weight: 600;
-}
-
-.btn-logout {
-  background: transparent;
-  border: none;
-  color: #64748b;
-  font-size: 0.75rem;
-  cursor: pointer;
-  padding: 0.2rem 0.4rem;
-  border-radius: var(--radius-sm);
-  transition: all 0.2s;
-}
-
-.btn-logout:hover {
-  color: #dc2626;
-  background: #fee2e2;
 }
 
 /* Filter Controls */
@@ -799,11 +715,6 @@ body {
   justify-content: center;
 }
 
-.modal-icon.cognito {
-  background: #eef2ff;
-  color: #4338ca;
-}
-
 .modal-icon.lambda {
   background: #fff7ed;
   color: #ea580c;
@@ -835,126 +746,6 @@ body {
 .modal-close-btn:hover {
   color: var(--text-primary);
   background: #f1f5f9;
-}
-
-.modal-tabs {
-  display: flex;
-  gap: 0.4rem;
-  background: #f1f5f9;
-  padding: 0.25rem;
-  border-radius: var(--radius-md);
-}
-
-.modal-tab-btn {
-  flex: 1;
-  background: transparent;
-  border: none;
-  padding: 0.5rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.modal-tab-btn.active {
-  background: #ffffff;
-  color: var(--accent-primary);
-  box-shadow: var(--shadow-sm);
-}
-
-.modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-
-.modal-form.hidden {
-  display: none;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.form-group label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.form-group input,
-.form-group select {
-  padding: 0.75rem 0.95rem;
-  background: #f8fafc;
-  border: 1px solid #cbd5e1;
-  border-radius: var(--radius-md);
-  font-family: var(--font-family);
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  outline: none;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  border-color: var(--accent-primary);
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-.quick-profiles {
-  background: #f8fafc;
-  border: 1px solid var(--border-light);
-  padding: 0.85rem;
-  border-radius: var(--radius-md);
-}
-
-.quick-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.profile-chips {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-}
-
-.profile-chip {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  padding: 0.4rem 0.75rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.profile-chip:hover {
-  background: #eef2ff;
-  border-color: #a5b4fc;
-  color: #4338ca;
-}
-
-.cognito-footer-meta {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-.cognito-footer-meta code {
-  background: #f1f5f9;
-  padding: 0.1rem 0.4rem;
-  border-radius: 4px;
 }
 
 /* Lambda Telemetry Report */
