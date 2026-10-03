@@ -42,6 +42,9 @@
                           |   - Amazon S3: Object Backup Storage (JSON)       |
                           |   - Amazon DynamoDB: Managed NoSQL Task Database  |
                           |   - AWS SSM Parameter Store: Central Config Store |
+                          |   - AWS Lambda: Serverless Nightly Task Cleanup   |
+                          |   - Amazon EventBridge: Scheduled Cron Triggers   |
+                          |   - Amazon Cognito: Secure User Authentication    |
                           |   - Amazon CloudWatch: CPU Utilization Metrics    |
                           |   - Amazon SNS: Email Alert Notifications         |
                           +---------------------------------------------------+

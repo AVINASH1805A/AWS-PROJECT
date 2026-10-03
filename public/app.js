@@ -72,11 +72,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const dynamoStatusText = document.getElementById('dynamoStatusText');
         const ssmStatusText = document.getElementById('ssmStatusText');
+        const lambdaStatusText = document.getElementById('lambdaStatusText');
+        const cognitoStatusText = document.getElementById('cognitoStatusText');
+
         if (dynamoStatusText) {
           dynamoStatusText.textContent = data.aws.dynamoClientConfigured ? 'DynamoDB Active' : 'DynamoDB Ready';
         }
         if (ssmStatusText) {
           ssmStatusText.textContent = data.aws.ssmClientConfigured ? 'SSM Active' : 'SSM Configured';
+        }
+        if (lambdaStatusText) {
+          lambdaStatusText.textContent = data.aws.lambdaClientConfigured ? 'Lambda Active' : 'Lambda Ready';
+        }
+        if (cognitoStatusText) {
+          cognitoStatusText.textContent = data.aws.cognitoClientConfigured ? 'Cognito Active' : 'Cognito Ready';
         }
       }
     } catch (err) {
@@ -267,6 +276,248 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ==============================================================================
+  // Amazon Cognito User Authentication Logic
+  // ==============================================================================
+  const authModal = document.getElementById('authModal');
+  const openAuthModalBtn = document.getElementById('openAuthModalBtn');
+  const closeAuthModalBtn = document.getElementById('closeAuthModalBtn');
+  const userAuthWidget = document.getElementById('userAuthWidget');
+  const tabSignIn = document.getElementById('tabSignIn');
+  const tabSignUp = document.getElementById('tabSignUp');
+  const signInForm = document.getElementById('signInForm');
+  const signUpForm = document.getElementById('signUpForm');
+  const profileChips = document.querySelectorAll('.profile-chip');
+
+  let currentUser = JSON.parse(localStorage.getItem('cognito_user') || 'null');
+  let currentToken = localStorage.getItem('cognito_token') || null;
+
+  function renderAuthWidget() {
+    if (!userAuthWidget) return;
+
+    if (currentUser) {
+      const initial = (currentUser.fullName || currentUser.username || 'U').charAt(0).toUpperCase();
+      userAuthWidget.innerHTML = `
+        <div class="user-profile-pill">
+          <div class="user-avatar-small">${initial}</div>
+          <div class="user-info-text">
+            <span class="user-name">${escapeHtml(currentUser.fullName || currentUser.username)}</span>
+            <span class="user-role-badge">${escapeHtml(currentUser.role || 'DevOps Engineer')}</span>
+          </div>
+          <button class="btn-logout" id="logoutBtn" title="Sign Out from Cognito">Sign Out</button>
+        </div>
+      `;
+
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+      }
+    } else {
+      userAuthWidget.innerHTML = `
+        <button class="btn btn-auth" id="openAuthModalBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Sign In (Cognito)</span>
+        </button>
+      `;
+      const btn = document.getElementById('openAuthModalBtn');
+      if (btn) {
+        btn.addEventListener('click', () => authModal.classList.remove('hidden'));
+      }
+    }
+  }
+
+  // Open & Close Modal
+  if (openAuthModalBtn) {
+    openAuthModalBtn.addEventListener('click', () => authModal.classList.remove('hidden'));
+  }
+  if (closeAuthModalBtn) {
+    closeAuthModalBtn.addEventListener('click', () => authModal.classList.add('hidden'));
+  }
+
+  // Tab switching
+  if (tabSignIn && tabSignUp) {
+    tabSignIn.addEventListener('click', () => {
+      tabSignIn.classList.add('active');
+      tabSignUp.classList.remove('active');
+      signInForm.classList.remove('hidden');
+      signUpForm.classList.add('hidden');
+    });
+
+    tabSignUp.addEventListener('click', () => {
+      tabSignUp.classList.add('active');
+      tabSignIn.classList.remove('active');
+      signUpForm.classList.remove('hidden');
+      signInForm.classList.add('hidden');
+    });
+  }
+
+  // Quick Sign In Profile Chips
+  profileChips.forEach(chip => {
+    chip.addEventListener('click', async () => {
+      const username = chip.dataset.user;
+      await performLogin(username, 'AwsProject@2026');
+    });
+  });
+
+  // Handle Sign In Submit
+  if (signInForm) {
+    signInForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('authUsername').value;
+      const password = document.getElementById('authPassword').value;
+      await performLogin(username, password);
+    });
+  }
+
+  // Handle Sign Up Submit
+  if (signUpForm) {
+    signUpForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('newUsername').value;
+      const email = document.getElementById('newEmail').value;
+      const role = document.getElementById('newRole').value;
+      const password = document.getElementById('newPassword').value;
+
+      try {
+        const res = await fetch('/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, role, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Account registered in Amazon Cognito User Pool!`, 'success');
+          await performLogin(username, password);
+        } else {
+          showToast(data.error || 'Registration failed', 'warning');
+        }
+      } catch (err) {
+        showToast('Cognito sign up service unavailable', 'warning');
+      }
+    });
+  }
+
+  async function performLogin(username, password) {
+    try {
+      const res = await fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        currentUser = data.user;
+        currentToken = data.token;
+        localStorage.setItem('cognito_user', JSON.stringify(currentUser));
+        localStorage.setItem('cognito_token', currentToken);
+        renderAuthWidget();
+        authModal.classList.add('hidden');
+        showToast(`Authenticated via Amazon Cognito as ${currentUser.fullName} (${currentUser.role})`, 'success');
+      } else {
+        showToast(data.error || 'Authentication failed', 'warning');
+      }
+    } catch (err) {
+      showToast('Cognito service error during login', 'warning');
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await fetch('/auth/logout', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${currentToken}` }
+      });
+    } catch (_) {}
+    currentUser = null;
+    currentToken = null;
+    localStorage.removeItem('cognito_user');
+    localStorage.removeItem('cognito_token');
+    renderAuthWidget();
+    showToast('Signed out from Amazon Cognito session', 'info');
+  }
+
+  // ==============================================================================
+  // AWS Lambda Nightly Cleanup Invocation Logic
+  // ==============================================================================
+  const triggerLambdaBtn = document.getElementById('triggerLambdaBtn');
+  const lambdaModal = document.getElementById('lambdaModal');
+  const closeLambdaModalBtn = document.getElementById('closeLambdaModalBtn');
+  const closeLambdaModalBtn2 = document.getElementById('closeLambdaModalBtn2');
+  const lambdaMetricsSummary = document.getElementById('lambdaMetricsSummary');
+
+  if (closeLambdaModalBtn) closeLambdaModalBtn.addEventListener('click', () => lambdaModal.classList.add('hidden'));
+  if (closeLambdaModalBtn2) closeLambdaModalBtn2.addEventListener('click', () => lambdaModal.classList.add('hidden'));
+
+  if (triggerLambdaBtn) {
+    triggerLambdaBtn.addEventListener('click', async () => {
+      triggerLambdaBtn.disabled = true;
+      triggerLambdaBtn.innerHTML = `
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite">
+          <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle>
+        </svg>
+        Invoking Lambda...
+      `;
+
+      try {
+        const res = await fetch('/lambda/cleanup', { method: 'POST' });
+        const data = await res.json();
+
+        if (data.success) {
+          tasksState = data.tasks || [];
+          updateMetrics();
+          renderTasks();
+
+          // Render Telemetry inside Lambda Modal
+          const t = data.telemetry || {};
+          lambdaMetricsSummary.innerHTML = `
+            <div class="telemetry-item">
+              <span class="telemetry-label">Purged Tasks</span>
+              <span class="telemetry-val" style="color: #ea580c;">${data.deletedCount} Tasks</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">Execution Time</span>
+              <span class="telemetry-val">${t.executionDurationMs || 42} ms</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">Billed Duration</span>
+              <span class="telemetry-val">${t.billedDurationMs || 100} ms</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">Memory Allocated</span>
+              <span class="telemetry-val">${t.memorySizeMB || 128} MB</span>
+            </div>
+            <div class="telemetry-item full-width">
+              <span class="telemetry-label">Lambda Function ARN</span>
+              <span class="telemetry-val">${escapeHtml(t.functionArn || 'arn:aws:lambda:ap-southeast-2:123456789012:function:BranchFlowNightlyCleanup')}</span>
+            </div>
+            <div class="telemetry-item full-width">
+              <span class="telemetry-label">Invocation Request ID</span>
+              <span class="telemetry-val">${escapeHtml(t.requestId || 'lambda-request-id')}</span>
+            </div>
+          `;
+
+          lambdaModal.classList.remove('hidden');
+          showToast(`⚡ AWS Lambda executed: ${data.deletedCount} completed tasks purged from DynamoDB & S3`, 'success');
+        } else {
+          showToast('Lambda invocation failed', 'warning');
+        }
+      } catch (err) {
+        showToast('Error invoking AWS Lambda cleanup endpoint', 'warning');
+      } finally {
+        triggerLambdaBtn.disabled = false;
+        triggerLambdaBtn.innerHTML = `
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          ⚡ Run Lambda Nightly Cleanup
+        `;
+      }
+    });
+  }
+
   // Filter Tabs Event Listeners
   filterTabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -305,6 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Initialize
+  renderAuthWidget();
   fetchTasks();
   fetchHealth();
   setInterval(fetchHealth, 10000);

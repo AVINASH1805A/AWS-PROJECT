@@ -63,6 +63,29 @@
           </svg>
           <span id="ssmStatusText">SSM Configured</span>
         </div>
+        <div class="badge lambda-badge" id="lambdaBadge" title="AWS Lambda Serverless Nightly Cleanup Engine">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span id="lambdaStatusText">Lambda Active</span>
+        </div>
+        <div class="badge cognito-badge" id="cognitoBadge" title="Amazon Cognito User Identity & Access Management">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span id="cognitoStatusText">Cognito Active</span>
+        </div>
+      </div>
+
+      <!-- User Auth Header Widget -->
+      <div class="user-auth-widget" id="userAuthWidget">
+        <button class="btn btn-auth" id="openAuthModalBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Sign In (Cognito)</span>
+        </button>
       </div>
     </header>
 
@@ -150,6 +173,12 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             Manual S3 Backup
           </button>
+          <button class="btn btn-lambda" id="triggerLambdaBtn" title="Trigger AWS Lambda serverless function to purge completed backlog tasks">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            ⚡ Run Lambda Nightly Cleanup
+          </button>
         </div>
       </div>
 
@@ -178,6 +207,142 @@
         AWS EC2 Release Pipeline Project • Agile Governed
       </div>
     </footer>
+  </div>
+
+  <!-- ========================================================================
+       Amazon Cognito Authentication Modal
+       ======================================================================== -->
+  <div id="authModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="modal-icon cognito">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3>Amazon Cognito Identity</h3>
+            <span class="modal-subtitle">Secure User Pool Authentication & Role-Based Access</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeAuthModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" id="tabSignIn">Sign In</button>
+        <button class="modal-tab-btn" id="tabSignUp">Sign Up</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signInForm" class="modal-form">
+        <div class="form-group">
+          <label for="authUsername">Username or AWS IAM Email</label>
+          <input type="text" id="authUsername" placeholder="e.g. avinash or avinash@aws.cloud" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="authPassword">Cognito Password</label>
+          <input type="password" id="authPassword" placeholder="••••••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          Sign In with Cognito
+        </button>
+      </form>
+
+      <!-- Sign Up Form (hidden by default) -->
+      <form id="signUpForm" class="modal-form hidden">
+        <div class="form-group">
+          <label for="newUsername">Username</label>
+          <input type="text" id="newUsername" placeholder="e.g. devops_engineer">
+        </div>
+        <div class="form-group">
+          <label for="newEmail">Work Email</label>
+          <input type="email" id="newEmail" placeholder="e.g. engineer@aws.cloud">
+        </div>
+        <div class="form-group">
+          <label for="newRole">Project Role</label>
+          <select id="newRole">
+            <option value="DevOps Lead">DevOps Lead</option>
+            <option value="Release Manager">Release Manager</option>
+            <option value="Cloud Architect">Cloud Solutions Architect</option>
+            <option value="Software Engineer">Software Engineer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="newPassword">Create Password</label>
+          <input type="password" id="newPassword" placeholder="••••••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Create Cognito Account</button>
+      </form>
+
+      <!-- Quick Demo Sign-in Profiles -->
+      <div class="quick-profiles">
+        <span class="quick-title">⚡ Quick Sign-In Profiles (One Click):</span>
+        <div class="profile-chips">
+          <button type="button" class="profile-chip" data-user="avinash" data-role="DevOps Lead">
+            <strong>Avinash</strong> (DevOps Lead)
+          </button>
+          <button type="button" class="profile-chip" data-user="admin" data-role="Release Manager">
+            <strong>Admin</strong> (Release Manager)
+          </button>
+          <button type="button" class="profile-chip" data-user="architect" data-role="Cloud Solutions Architect">
+            <strong>Architect</strong> (AWS Lead)
+          </button>
+        </div>
+      </div>
+
+      <div class="cognito-footer-meta">
+        <span>User Pool ID: <code id="modalPoolId">ap-southeast-2_BranchFlowPool</code></span>
+        <span>•</span>
+        <span>Region: <code>ap-southeast-2</code></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       AWS Lambda Execution Telemetry Modal
+       ======================================================================== -->
+  <div id="lambdaModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="modal-icon lambda">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div>
+            <h3>AWS Lambda Execution Results</h3>
+            <span class="modal-subtitle" id="lambdaModalSubtitle">Serverless Nightly Backlog Cleanup Engine</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeLambdaModalBtn">&times;</button>
+      </div>
+
+      <div class="lambda-metrics-summary" id="lambdaMetricsSummary">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <div class="lambda-eventbridge-box">
+        <div class="cron-header">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <strong>Amazon EventBridge Automated Schedule</strong>
+        </div>
+        <p>Trigger Expression: <code>cron(0 0 * * ? *)</code> (Executes nightly at 00:00 UTC / 10:00 AM Sydney). Purges all completed backlog tickets automatically from DynamoDB.</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary btn-full" id="closeLambdaModalBtn2">Close Telemetry Report</button>
+      </div>
+    </div>
   </div>
 
   <!-- Toast Notification System -->

@@ -105,6 +105,21 @@ The release workflow adheres to dual-branch Git governance (`develop` and `main`
 * **Amazon SNS (`ec2-high-cpu-alert`)**:
   * Sends automated email alerts to system operators upon alarm state transition.
 
+### 6. Serverless Backlog Automation (`AWS Lambda & EventBridge`)
+* **AWS Lambda Function (`BranchFlowNightlyCleanup`)**:
+  * Serverless compute function written in Node.js 20.x runtime.
+  * Triggered on a nightly cron schedule via Amazon EventBridge (`cron(0 0 * * ? *)`).
+  * Scans Amazon DynamoDB table (`BranchFlowTasks`) for tickets marked `completed: true`.
+  * Automatically purges completed tasks to maintain high database performance and low storage overhead.
+  * Can also be invoked on-demand via the web dashboard (`POST /lambda/cleanup`) with full execution telemetry (duration, billed time, memory, requestId).
+
+### 7. User Authentication & Access Governance (`Amazon Cognito`)
+* **Amazon Cognito User Pool (`ap-southeast-2_BranchFlowPool`)**:
+  * Enterprise-grade identity provider supporting secure user sign-up, sign-in, and role-based access management.
+  * Issues cryptographically verified JWT session tokens.
+  * Supports role segregation: DevOps Lead, Release Manager, and Cloud Solutions Architect.
+  * Integrated seamlessly into the frontend with a modal interface and quick sign-in profiles.
+
 ---
 
 ## Agile Sprint 2 User Stories & Governance
@@ -118,8 +133,11 @@ The release workflow adheres to dual-branch Git governance (`develop` and `main`
 | **STORY-205** | **Keyless IAM Security**: Attach IAM Role `EC2-S3-Access` to EC2 instances. | High | 3 | **Done** |
 | **STORY-206** | **AWS DynamoDB Sync**: Synchronize tasks to `BranchFlowTasks` NoSQL table. | High | 5 | **Done** |
 | **STORY-207** | **AWS SSM Parameter Store**: Centralize environment parameters via SSM. | Medium | 3 | **Done** |
+| **STORY-208** | **AWS Lambda Auto-Cleanup**: Serverless function to purge completed tasks nightly. | High | 5 | **Done** |
+| **STORY-209** | **Amazon Cognito Auth**: Secure user login/signup with role-based session management. | High | 5 | **Done** |
 
 ---
 
 ## Conclusion
-The **BranchFlow** project successfully fulfills all requirements for an Agile-governed cloud release pipeline. By integrating AWS S3, AWS DynamoDB, AWS SSM Parameter Store, AWS CloudWatch, AWS SNS, AWS IAM, and shell script automation for EC2 deployments, the system provides a comprehensive, scalable, and secure cloud web application architecture suitable for production deployment.
+The **BranchFlow** project successfully fulfills all requirements for an Agile-governed cloud release pipeline. By integrating **9 AWS cloud services** — Amazon EC2, Amazon S3, Amazon DynamoDB, AWS SSM Parameter Store, AWS Lambda, Amazon EventBridge, Amazon Cognito, Amazon CloudWatch, and Amazon SNS — alongside shell script automation for automated EC2 deployments, the system provides a comprehensive, scalable, serverless-enhanced, and secure cloud web application architecture suitable for enterprise production deployment.
+

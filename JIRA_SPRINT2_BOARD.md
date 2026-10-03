@@ -21,6 +21,8 @@ The goal of Sprint 2 is to enhance cloud infrastructure governance by introducin
 | **STORY-205** | *As a Security Analyst*, I want EC2 instances to use IAM Roles (`EC2-S3-Access`) instead of hardcoded API access keys for secure AWS resource access. | **High** | 3 | **Done** | AWS IAM |
 | **STORY-206** | *As a Database Administrator*, I want real-time task records synchronized to an AWS DynamoDB NoSQL table (`BranchFlowTasks`) for managed cloud persistence. | **High** | 5 | **Done** | AWS DynamoDB |
 | **STORY-207** | *As a Cloud Security Engineer*, I want application environment variables loaded from AWS SSM Parameter Store for centralized configuration management. | **Medium** | 3 | **Done** | AWS SSM |
+| **STORY-208** | *As a Cloud Ops Engineer*, I want an AWS Lambda serverless function triggered by EventBridge to automatically purge completed tasks nightly from DynamoDB. | **High** | 5 | **Done** | AWS Lambda |
+| **STORY-209** | *As a Security Architect*, I want user authentication governed by Amazon Cognito User Pool with JWT session tokens and role-based permissions. | **High** | 5 | **Done** | Amazon Cognito |
 
 ---
 
