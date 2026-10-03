@@ -44,9 +44,8 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2rem 1rem;
+  flex-direction: column;
+  padding: 0;
   overflow-x: hidden;
   position: relative;
 }
@@ -106,11 +105,13 @@ body {
 /* App Container Layout */
 .app-container {
   width: 100%;
-  max-width: 920px;
+  max-width: 100%;
   z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  flex: 1;
 }
 
 /* Header */
@@ -155,9 +156,10 @@ body {
 }
 
 .brand-text .subtext {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  font-weight: 500;
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .header-badges {
