@@ -105,25 +105,73 @@ function loadLocalTasks() {
   }
   return [
     {
-      id: 1724650000000,
-      text: 'Configure Dev EC2 Instance and SSH Keys',
+      id: 1724650000001,
+      text: 'Configure Dev & Prod EC2 Instances with SSH Key Pair',
       category: 'DevOps',
       priority: 'High',
       completed: true,
       createdAt: new Date().toISOString()
     },
     {
-      id: 1724650100000,
-      text: 'Setup AWS S3 Backup Bucket, DynamoDB Table & SSM Parameters',
+      id: 1724650000002,
+      text: 'Setup AWS S3 Backup Bucket & IAM Role Policy',
       category: 'Cloud Storage',
       priority: 'High',
+      completed: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 1724650000003,
+      text: 'Implement DynamoDB NoSQL Table for Task Persistence',
+      category: 'Database',
+      priority: 'High',
+      completed: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 1724650000004,
+      text: 'Configure AWS SSM Parameter Store for Centralized Config',
+      category: 'DevOps',
+      priority: 'Medium',
+      completed: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 1724650000005,
+      text: 'Deploy Production Release via Automated deploy.sh Script',
+      category: 'Release Pipeline',
+      priority: 'High',
+      completed: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 1724650000006,
+      text: 'Setup CloudWatch CPU Alarm & SNS Email Alert for Prod Server',
+      category: 'Monitoring',
+      priority: 'High',
+      completed: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 1724650000007,
+      text: 'Deploy AWS Lambda Nightly Cleanup with EventBridge Schedule',
+      category: 'DevOps',
+      priority: 'High',
+      completed: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 1724650000008,
+      text: 'Integrate Agile Sprint 2 Board & Release Governance Documentation',
+      category: 'Release Pipeline',
+      priority: 'Medium',
       completed: false,
       createdAt: new Date().toISOString()
     },
     {
-      id: 1724650200000,
-      text: 'Deploy Production Release via Automated Script',
-      category: 'Release Pipeline',
+      id: 1724650000009,
+      text: 'Configure Multi-Environment Dev vs Prod Badge & Health Dashboard',
+      category: 'Monitoring',
       priority: 'Medium',
       completed: false,
       createdAt: new Date().toISOString()
