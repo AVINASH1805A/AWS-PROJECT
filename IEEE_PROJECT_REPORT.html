@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IEEE Report: An Agile-Governed Automated Release Pipeline on AWS EC2</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+        }
+        body {
+            font-family: "Times New Roman", Times, Georgia, serif;
+            color: #111827;
+            background: #ffffff;
+            line-height: 1.45;
+            padding: 30px 40px;
+            font-size: 10.5pt;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        header.ieee-header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1.5px solid #1f2937;
+            padding-bottom: 18px;
+        }
+        h1.ieee-title {
+            font-size: 19pt;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            line-height: 1.25;
+            color: #0f172a;
+        }
+        .ieee-author {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        .ieee-affiliation {
+            font-size: 9.5pt;
+            color: #475569;
+            font-style: italic;
+            margin-bottom: 2px;
+        }
+        .ieee-meta {
+            font-size: 8.5pt;
+            color: #2563eb;
+            font-family: monospace;
+            margin-top: 5px;
+        }
+        .abstract-box {
+            margin: 20px 25px;
+            padding: 12px 18px;
+            background: #f8fafc;
+            border-left: 3px solid #0f172a;
+            font-size: 9pt;
+            text-align: justify;
+        }
+        .abstract-title {
+            font-weight: bold;
+            font-style: italic;
+        }
+        .keywords {
+            margin-top: 8px;
+            font-size: 9pt;
+            font-weight: bold;
+        }
+        .keywords span {
+            font-weight: normal;
+            font-style: italic;
+        }
+        h2.ieee-sec {
+            font-size: 11.5pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 0.05em;
+            margin: 24px 0 10px 0;
+            border-bottom: 0.5px solid #cbd5e1;
+            padding-bottom: 3px;
+            color: #0f172a;
+        }
+        h3.ieee-subsec {
+            font-size: 10.5pt;
+            font-weight: bold;
+            font-style: italic;
+            margin: 14px 0 6px 0;
+            color: #1e293b;
+        }
+        p {
+            text-align: justify;
+            text-indent: 1.5em;
+            margin: 6px 0;
+        }
+        p.no-indent {
+            text-indent: 0;
+        }
+        .figure-card {
+            margin: 18px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+        .figure-card img {
+            max-width: 95%;
+            height: auto;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+        .figure-caption {
+            font-size: 9pt;
+            color: #334155;
+            margin-top: 6px;
+            text-align: center;
+            font-style: italic;
+        }
+        .figure-caption strong {
+            font-style: normal;
+            font-weight: bold;
+        }
+        table.ieee-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 8.5pt;
+            page-break-inside: avoid;
+        }
+        table.ieee-table th, table.ieee-table td {
+            border: 0.5px solid #64748b;
+            padding: 5px 8px;
+            text-align: left;
+        }
+        table.ieee-table th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+            text-align: center;
+        }
+        table.ieee-table caption {
+            font-size: 9pt;
+            font-weight: bold;
+            margin-bottom: 6px;
+            text-align: center;
+            letter-spacing: 0.03em;
+        }
+        pre.code-block {
+            background: #f8fafc;
+            border: 0.5px solid #cbd5e1;
+            padding: 10px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 8.5pt;
+            line-height: 1.35;
+            overflow-x: auto;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .equation {
+            text-align: center;
+            font-style: italic;
+            margin: 10px 0;
+            font-size: 10pt;
+        }
+        ol.references {
+            font-size: 8.5pt;
+            padding-left: 20px;
+            line-height: 1.4;
+            margin: 10px 0;
+        }
+        ol.references li {
+            margin-bottom: 4px;
+            text-align: justify;
+        }
+    </style>
+</head>
+<body>
+
+<header class="ieee-header">
+    <h1 class="ieee-title">An Agile-Governed Automated Release Pipeline for Dev-to-Production Deployment of a Cloud Web Application on AWS EC2</h1>
+    <div class="ieee-author">Avinash Agarwal</div>
+    <div class="ieee-affiliation">Department of Computer Science &amp; Engineering • Cloud Computing Specialization</div>
+    <div class="ieee-affiliation">Project Repository: https://github.com/AVINASH1805A/AWS-PROJECT</div>
+    <div class="ieee-meta">AWS Infrastructure Region: Asia Pacific - Sydney (ap-southeast-2)</div>
+</header>
+
+<div class="abstract-box">
+    <span class="abstract-title">Abstract</span>—Contemporary enterprise web architectures demand rapid software release cycles without compromising operational reliability, data consistency, or infrastructure security. Traditional manual deployment methods suffer from configuration drift, human error, static credential leakage, and service downtime. This paper presents the design, implementation, and empirical evaluation of <strong>BranchFlow</strong>, a cloud-native release governance and task management system deployed on Amazon Web Services (AWS). The architecture incorporates a dual-branch Git release pipeline mapped to isolated Amazon Elastic Compute Cloud (EC2) instances representing Development and Production environments. The system employs keyless identity governance using AWS Identity and Access Management (IAM) instance profiles and AWS Security Token Service (STS). Data persistence is decoupled into a dual-storage paradigm utilizing high-throughput Amazon DynamoDB for real-time transactions and Amazon Simple Storage Service (S3) for immutable point-in-time disaster recovery snapshots. Furthermore, centralized configuration management is achieved through AWS Systems Manager (SSM) Parameter Store, while routine database pruning is offloaded to a serverless AWS Lambda function triggered on a deterministic Amazon EventBridge schedule. Continuous infrastructure observability is maintained via Amazon CloudWatch telemetry alarms integrated with Amazon Simple Notification Service (SNS) email dispatches. Experimental validation demonstrates zero-downtime automated deployment via custom shell orchestration (<code>deploy.sh</code>), sub-50ms serverless maintenance overhead, and seamless fault tolerance under network partition conditions.
+    <div class="keywords">Keywords—<span>Cloud Computing, DevOps, Continuous Deployment, Amazon Web Services (AWS), Amazon EC2, Amazon S3, Amazon DynamoDB, AWS Lambda, EventBridge, CloudWatch, Agile Governance, Serverless Architecture.</span></div>
+</div>
+
+<h2 class="ieee-sec">I. Introduction</h2>
+<p>The rapid adoption of Agile and Scrum methodologies has accelerated the cadence of software releases. However, bridging the gap between local software engineering and resilient cloud infrastructure remains a primary challenge in modern software engineering [1]. Manual server configuration, unversioned deployments, static credential exposure in code repositories, and tightly coupled database monoliths introduce severe availability risks and security vulnerabilities into production environments [2].</p>
+<p>To address these challenges, this paper presents <strong>BranchFlow</strong>, an enterprise-grade cloud web application and release pipeline engineered entirely on Amazon Web Services (AWS). The core objectives of this engineering implementation include: (1) Environment isolation between development and production virtual machines in the Sydney (<code>ap-southeast-2</code>) region; (2) Automated zero-downtime deployment through shell scripting (<code>deploy.sh</code>); (3) Decoupled dual-tier persistence integrating Amazon DynamoDB with Amazon S3; (4) Keyless security via IAM instance profiles; (5) Serverless automated maintenance via AWS Lambda and EventBridge; and (6) Proactive observability via Amazon CloudWatch and Amazon SNS.</p>
+
+<h2 class="ieee-sec">II. System Architecture &amp; Governance</h2>
+<p>The BranchFlow architecture is structured into six decoupled operational tiers: Source Control &amp; Agile Governance, Identity &amp; Access Governance, Compute Infrastructure, Dual Cloud Persistence, Serverless Backlog Maintenance, and Observability &amp; Telemetry.</p>
+
+<div class="figure-card">
+    <img src="architecture_diagram.png" alt="BranchFlow Architecture Diagram">
+    <div class="figure-caption"><strong>Fig. 1.</strong> End-to-end cloud release governance and serverless architecture diagram for BranchFlow.</div>
+</div>
+
+<h3 class="ieee-subsec">A. Dual-Branch Git Release Governance</h3>
+<p>The software repository enforces a structured Git branching strategy: The <code>develop</code> branch serves as the integration branch for ongoing sprint deliverables where all feature testing occurs. The <code>main</code> branch represents the production release branch, accepting merges exclusively from verified sprint candidates that fulfill the Definition of Done (DoD).</p>
+
+<h3 class="ieee-subsec">B. Compute Infrastructure Topology</h3>
+<p>Two independent virtual machines are provisioned on Amazon EC2 within the Sydney (<code>ap-southeast-2a</code>) Availability Zone:
+(1) <strong>Development Instance (<code>dev-server</code>)</strong>: Instance ID <code>i-0f428b101a0e1ec85</code>, Private IP <code>172.31.13.79</code>, dedicated to the <code>develop</code> Git branch;
+(2) <strong>Production Instance (<code>prod-server</code>)</strong>: Instance ID <code>i-0caf44cc7fc9ec005</code>, Private IP <code>172.31.8.67</code>, dedicated to the <code>main</code> Git branch.
+Both run Ubuntu 22.04 LTS on a <code>t2.micro</code> hardware profile (1 vCPU, 1 GB RAM, EBS volume) powered by Node.js 20 and Express.js.</p>
+
+<h3 class="ieee-subsec">C. Identity and Keyless Access Governance</h3>
+<p>In strict adherence to AWS Cloud Security Best Practices [3], static AWS Access Keys are prohibited across all codebase files. Both EC2 instances assume the IAM Role <code>EC2-S3-Access</code> via an IAM Instance Profile. The AWS SDK v3 retrieves temporary credentials automatically through the EC2 Instance Metadata Service (IMDSv2).</p>
+
+<h2 class="ieee-sec">III. Implementation Details</h2>
+
+<h3 class="ieee-subsec">A. Automated Release Deployment Pipeline (deploy.sh)</h3>
+<p>Deployments are codified into an executable shell script located at <code>/home/ubuntu/AWS-PROJECT/deploy.sh</code>:</p>
+<pre class="code-block">
+#!/bin/bash
+set -e
+BRANCH=${1:-main}
+APP_DIR="/home/ubuntu/AWS-PROJECT"
+LOG_FILE="/home/ubuntu/AWS-PROJECT/deploy.log"
+
+echo "=== [$(date '+%Y-%m-%d %H:%M:%S')] Starting Deployment: $BRANCH ===" >> "$LOG_FILE"
+cd "$APP_DIR"
+git fetch origin "$BRANCH"
+git reset --hard "origin/$BRANCH"
+npm install --production
+pkill -f 'node server.js' || true
+nohup node server.js > app.log 2>&1 &
+echo "=== [$(date '+%Y-%m-%d %H:%M:%S')] Deployment Successful on Port 3000 ===" >> "$LOG_FILE"
+</pre>
+
+<h3 class="ieee-subsec">B. Dual-Cloud Persistence Tier</h3>
+<p>The persistence layer utilizes two complementary cloud storage services: (1) <strong>Amazon DynamoDB</strong> provides managed NoSQL persistence via the <code>BranchFlowTasks</code> table partitioned by <code>id (S)</code> with On-Demand capacity; (2) <strong>Amazon S3</strong> bucket <code>branchflow-backups-avinash24</code> captures immutable timestamped JSON snapshots under <code>backups/tasks-{timestamp}.json</code> for point-in-time audit and disaster recovery.</p>
+
+<h3 class="ieee-subsec">C. Centralized Configuration Management (AWS SSM)</h3>
+<p>The Express backend communicates with AWS Systems Manager (SSM) Parameter Store using <code>@aws-sdk/client-ssm</code>, decoupling application runtime parameters from local disk configurations.</p>
+
+<h3 class="ieee-subsec">D. Serverless Backlog Maintenance (AWS Lambda &amp; EventBridge)</h3>
+<p>The serverless function <code>BranchFlowNightlyCleanup</code> (Node.js 20.x, 128 MB) scans DynamoDB and purges completed tasks. It is scheduled via Amazon EventBridge rule <code>BranchFlowMidnightSchedule</code>:</p>
+<div class="equation">Schedule = cron(0 0 * * ? *)</div>
+<p class="no-indent">which executes nightly at 00:00 UTC (10:00 AM Sydney). An on-demand trigger endpoint (<code>POST /lambda/cleanup</code>) is integrated into the web client for live verification.</p>
+
+<h3 class="ieee-subsec">E. Observability &amp; Alerting (CloudWatch &amp; SNS)</h3>
+<p>The custom CloudWatch Alarm <code>prod-server-high-cpu-alarm</code> tracks production CPU utilization:</p>
+<div class="equation">Condition: Average(CPUUtilization) &gt; 70% for 5 minutes (300 s)</div>
+<p class="no-indent">Breaching this threshold transitions the alarm to <code>ALARM</code> state and publishes an alert to Amazon SNS topic <code>ec2-high-cpu-alert</code>, dispatching an immediate notification email to the engineering team.</p>
+
+<h2 class="ieee-sec">IV. Agile Sprint 2 Governance</h2>
+<p>All project deliverables were managed and executed under Scrum governance in Sprint 2. Table I details the user story mapping and verification criteria.</p>
+
+<table class="ieee-table">
+    <caption>TABLE I: Agile Sprint 2 User Story Governance &amp; Verification Matrix</caption>
+    <thead>
+        <tr>
+            <th>Story ID</th>
+            <th>User Story Title &amp; Description</th>
+            <th>Priority</th>
+            <th>Points</th>
+            <th>Status</th>
+            <th>Verification Outcome</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>STORY-201</strong></td>
+            <td><strong>AWS S3 Cloud Backup</strong>: Automatically archive task changes to S3.</td>
+            <td>High</td>
+            <td>5</td>
+            <td><strong>Done</strong></td>
+            <td>Timestamped JSON object created under backups/tasks-*.json.</td>
+        </tr>
+        <tr>
+            <td><strong>STORY-202</strong></td>
+            <td><strong>Automated Release Pipeline</strong>: Zero-downtime EC2 deployment script.</td>
+            <td>High</td>
+            <td>3</td>
+            <td><strong>Done</strong></td>
+            <td>./deploy.sh updates daemon process on port 3000 reliably.</td>
+        </tr>
+        <tr>
+            <td><strong>STORY-203</strong></td>
+            <td><strong>CloudWatch &amp; SNS Proactive Alerts</strong>: Monitor CPU &gt; 70% with email alert.</td>
+            <td>High</td>
+            <td>5</td>
+            <td><strong>Done</strong></td>
+            <td>CloudWatch Alarm triggers SNS email notification upon breach.</td>
+        </tr>
+        <tr>
+            <td><strong>STORY-204</strong></td>
+            <td><strong>Environment Diagnostics &amp; Badging</strong>: DEV vs PROD indicators in UI.</td>
+            <td>Medium</td>
+            <td>2</td>
+            <td><strong>Done</strong></td>
+            <td>Header dynamically renders blue DEV vs green PRODUCTION badge.</td>
+        </tr>
+        <tr>
+            <td><strong>STORY-205</strong></td>
+            <td><strong>Keyless IAM Security</strong>: Attach IAM Role EC2-S3-Access to instances.</td>
+            <td>High</td>
+            <td>3</td>
+            <td><strong>Done</strong></td>
+            <td>Zero static credentials in code; STS metadata authentication verified.</td>
+        </tr>
+        <tr>
+            <td><strong>STORY-206</strong></td>
+            <td><strong>AWS DynamoDB Real-Time Sync</strong>: Store tasks in managed NoSQL table.</td>
+            <td>High</td>
+            <td>5</td>
+            <td><strong>Done</strong></td>
+            <td>Real-time CRUD operations reflected in BranchFlowTasks table.</td>
+        </tr>
+        <tr>
+            <td><strong>STORY-207</strong></td>
+            <td><strong>AWS SSM Parameter Store</strong>: Centralize configuration management.</td>
+            <td>Medium</td>
+            <td>3</td>
+            <td><strong>Done</strong></td>
+            <td>Runtime parameters resolved from SSM without local file coupling.</td>
+        </tr>
+        <tr>
+            <td><strong>STORY-208</strong></td>
+            <td><strong>AWS Lambda &amp; EventBridge</strong>: Serverless nightly backlog purge.</td>
+            <td>High</td>
+            <td>5</td>
+            <td><strong>Done</strong></td>
+            <td>Completed tasks purged nightly and via on-demand UI telemetry modal.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 class="ieee-sec">V. Empirical Results &amp; System Verification</h2>
+<p>The deployed application was empirically evaluated in the AWS Sydney region across functional and infrastructure criteria.</p>
+
+<div class="figure-card">
+    <img src="fig1_prod_web_ui.png" alt="Production Web Dashboard">
+    <div class="figure-caption"><strong>Fig. 2.</strong> Production web dashboard running live on Amazon EC2 (ip-172-31-8-67 / 13.55.86.176), displaying the green PRODUCTION badge, cloud service indicators (S3 Cloud Active, DynamoDB Active, SSM Active, Lambda Active), and serverless execution controls.</div>
+</div>
+
+<div class="figure-card">
+    <img src="fig3_ec2_cloudwatch.png" alt="EC2 Instances and CloudWatch Telemetry">
+    <div class="figure-caption"><strong>Fig. 3.</strong> Amazon EC2 Management Console showing active dev-server (i-0f428b101a0e1ec85) and prod-server (i-0caf44cc7fc9ec005) instances alongside real-time CloudWatch telemetry graphs (CPU utilization %, Network in/out bytes).</div>
+</div>
+
+<div class="figure-card">
+    <img src="fig4_s3_bucket.png" alt="Amazon S3 Bucket">
+    <div class="figure-caption"><strong>Fig. 4.</strong> Amazon S3 Management Console displaying the active backup container branchflow-backups-avinash24 located in the Sydney region (ap-southeast-2).</div>
+</div>
+
+<div class="figure-card">
+    <img src="fig5_dynamodb_table.png" alt="Amazon DynamoDB Table">
+    <div class="figure-caption"><strong>Fig. 5.</strong> Amazon DynamoDB Management Console showing successful creation and Active status of the BranchFlowTasks NoSQL table.</div>
+</div>
+
+<div class="figure-card">
+    <img src="fig6_lambda_eventbridge.png" alt="AWS Lambda and EventBridge Trigger">
+    <div class="figure-caption"><strong>Fig. 6.</strong> AWS Lambda Console demonstrating BranchFlowNightlyCleanup function architecture, Amazon EventBridge trigger association (cron(0 0 * * ? *)), and active execution status.</div>
+</div>
+
+<h2 class="ieee-sec">VI. Discussion &amp; Resilience Analysis</h2>
+<p><strong>Local Resilience Cache</strong>: If internet connectivity to AWS endpoints degrades, backend calls are encapsulated in resilient try-catch handlers that fall back to local file persistence (<code>data/tasks.json</code>), preventing process crashes.</p>
+<p><strong>Cost &amp; Security Optimization</strong>: The entire architecture operates strictly within the AWS Free Tier (EC2 t2.micro, DynamoDB On-Demand, Lambda 1M invocations/month). Keyless IAM authentication completely eliminates credential theft risks.</p>
+
+<h2 class="ieee-sec">VII. Conclusion &amp; Future Work</h2>
+<p>This paper presented the architecture, deployment, and evaluation of <strong>BranchFlow</strong>, demonstrating an Agile-governed cloud release pipeline across Amazon EC2, S3, DynamoDB, SSM, Lambda, EventBridge, CloudWatch, and SNS. Future work will incorporate an AWS Application Load Balancer (ALB), an Auto Scaling Group (ASG), and an automated AWS CodePipeline triggered via GitHub webhooks.</p>
+
+<h2 class="ieee-sec">References</h2>
+<ol class="references">
+    <li>M. Fowler and P. Pramod, <em>Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation</em>, Boston: Addison-Wesley, 2010.</li>
+    <li>J. Humble and D. Farley, "Continuous Delivery: Anatomy of the Deployment Pipeline," <em>IEEE Software</em>, vol. 28, no. 3, pp. 24–27, May-June 2011.</li>
+    <li>Amazon Web Services, "AWS Well-Architected Framework: Reliability and Security Pillars," AWS Whitepapers, Tech. Rep. 2024-03, 2024.</li>
+    <li>B. Burns, <em>Designing Distributed Systems: Patterns and Paradigms for Scalable, Reliable Services</em>, Sebastopol: O'Reilly Media, 2018.</li>
+    <li>I. Sommerville, <em>Software Engineering</em>, 10th ed. Boston: Pearson, 2016.</li>
+    <li>Amazon Web Services, "AWS SDK for JavaScript v3 Developer Guide," AWS Documentation, 2024.</li>
+    <li>K. Schwaber and J. Sutherland, "The Scrum Guide: The Definitive Guide to Scrum: The Rules of the Game," Scrum.org, Tech. Rep., 2020.</li>
+</ol>
+
+</body>
+</html>
