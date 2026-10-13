@@ -106,6 +106,9 @@ This project presents an enterprise-grade cloud application and automated releas
 <p>The release workflow adheres to dual-branch Git governance (<code>develop</code> and <code>main</code>). Deployments to EC2 servers are fully automated using a custom shell script (<code>deploy.sh</code>), eliminating manual configuration errors and establishing zero-downtime release practices.</p>
 <hr>
 <h2>System Architecture</h2>
+<div style="text-align: center; margin: 15px 0;">
+  <img src="architecture_diagram.png" alt="BranchFlow Cloud Architecture Diagram" style="max-width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+</div>
 <pre><code>+-----------------------------------------+
 <table class="styled-table"><thead><tr><th></th><th>Agile Developer Workstation</th></tr></thead><tbody><tr><td></td><td>(Feature Branch: feature/s3-backup)</td></tr></tbody></table>
                                     +-----------------------------------------+

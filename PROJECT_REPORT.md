@@ -6,19 +6,21 @@
 * **Author**: Avinash Agarwal
 * **Repository**: [https://github.com/AVINASH1805A/AWS-PROJECT](https://github.com/AVINASH1805A/AWS-PROJECT)
 * **Domain**: Cloud Computing, DevOps, Software Engineering & Agile Release Governance
-* **Primary AWS Services**: Amazon EC2, Amazon S3, Amazon DynamoDB, AWS SSM Parameter Store, AWS IAM, Amazon CloudWatch, Amazon SNS
+* **Primary AWS Services**: Amazon EC2, Amazon S3, Amazon DynamoDB, AWS SSM Parameter Store, AWS Lambda, Amazon EventBridge, AWS IAM, Amazon CloudWatch, Amazon SNS
 * **Tech Stack**: Node.js, Express, HTML5, CSS3 (Glassmorphic Theme), JavaScript (ES6+), Git, Shell Scripting
 
 ---
 
 ## Executive Summary
-This project presents an enterprise-grade cloud application and automated release deployment pipeline built on Amazon Web Services (AWS). Titled **BranchFlow**, the system combines a modern full-stack web application with dual cloud data persistence (**Amazon S3** & **Amazon DynamoDB**), centralized configuration governance (**AWS Systems Manager Parameter Store**), infrastructure health monitoring (**Amazon CloudWatch** & **Amazon SNS**), keyless security authorization (**AWS IAM**), and strict Agile release governance across isolated **Development** and **Production** cloud environments on **Amazon EC2**.
+This project presents an enterprise-grade cloud application and automated release deployment pipeline built on Amazon Web Services (AWS). Titled **BranchFlow**, the system combines a modern full-stack web application with dual cloud data persistence (**Amazon S3** & **Amazon DynamoDB**), centralized configuration governance (**AWS Systems Manager Parameter Store**), serverless automated cleanup (**AWS Lambda** & **Amazon EventBridge**), infrastructure health monitoring (**Amazon CloudWatch** & **Amazon SNS**), keyless security authorization (**AWS IAM**), and strict Agile release governance across isolated **Development** and **Production** cloud environments on **Amazon EC2**.
 
 The release workflow adheres to dual-branch Git governance (`develop` and `main`). Deployments to EC2 servers are fully automated using a custom shell script (`deploy.sh`), eliminating manual configuration errors and establishing zero-downtime release practices.
 
 ---
 
 ## System Architecture
+
+![BranchFlow Cloud Architecture Diagram](architecture_diagram.png)
 
 ```
                                     +-----------------------------------------+
@@ -48,6 +50,8 @@ The release workflow adheres to dual-branch Git governance (`develop` and `main`
                           |   - Amazon S3: Object Backup Storage (JSON)       |
                           |   - Amazon DynamoDB: Managed NoSQL Task Database  |
                           |   - AWS SSM Parameter Store: Central Config Store |
+                          |   - AWS Lambda: Serverless Nightly Task Cleanup   |
+                          |   - Amazon EventBridge: Scheduled Cron Triggers   |
                           |   - Amazon CloudWatch: CPU Utilization Metrics    |
                           |   - Amazon SNS: Email Alert Notifications         |
                           +---------------------------------------------------+
@@ -66,16 +70,19 @@ The release workflow adheres to dual-branch Git governance (`develop` and `main`
   * `DELETE /tasks/:id`: Deletes a task and updates S3 backup & DynamoDB.
   * `POST /backup`: Manually triggers an instant S3 & DynamoDB cloud sync.
   * `GET /backups`: Lists historical backup objects from S3.
-  * `GET /health`: Diagnostic endpoint returning OS memory, CPU load, uptime, S3, DynamoDB, and SSM connectivity.
+  * `POST /lambda/cleanup`: Triggers AWS Lambda serverless task cleanup with live execution telemetry.
+  * `GET /health`: Diagnostic endpoint returning OS memory, CPU load, uptime, S3, DynamoDB, SSM, and Lambda connectivity.
 * **AWS Cloud Integration Engine**:
   * **AWS S3 Backup Engine**: Utilizes `@aws-sdk/client-s3` v3 library. Asynchronously generates timestamped JSON files under `s3://branchflow-backups-avinash24/backups/tasks-<timestamp>.json`.
   * **AWS DynamoDB NoSQL Database**: Utilizes `@aws-sdk/client-dynamodb` and `@aws-sdk/lib-dynamodb` to store live task items in the `BranchFlowTasks` table.
   * **AWS SSM Parameter Store**: Utilizes `@aws-sdk/client-ssm` to retrieve central environment configurations.
+  * **AWS Lambda Integration**: Utilizes `@aws-sdk/client-lambda` to invoke `BranchFlowNightlyCleanup` function on-demand.
 
 ### 2. Modern Glassmorphic User Interface (`public/`)
 * Built with semantic HTML5, CSS design tokens, HSL color palettes, and glassmorphism backdrop filters.
 * Displays live metric counters (Total Tasks, In Progress, Completed, Cloud Sync Engine Status).
-* Features dynamic cloud status badges (`S3 Active`, `DynamoDB Active`, `SSM Configured`, `DEV` vs `PROD`).
+* Features dynamic cloud status badges (`S3 Active`, `DynamoDB Active`, `SSM Configured`, `Lambda Active`, `DEV` vs `PROD`).
+* Includes interactive modal for AWS Lambda execution telemetry (purged tasks count, execution time, billed duration, memory, request ID).
 * Includes toast notification alerts confirming S3 cloud backup & DynamoDB sync completion.
 
 ### 3. Automated Release Deployment Script (`deploy.sh`)
@@ -93,7 +100,7 @@ The release workflow adheres to dual-branch Git governance (`develop` and `main`
   * `dev-server` (Ubuntu 22.04 LTS, `t2.micro`): Dedicated to testing incoming `develop` releases.
   * `prod-server` (Ubuntu 22.04 LTS, `t2.micro`): Dedicated to serving live `main` releases.
 * **AWS IAM Role (`EC2-S3-Access`)**:
-  * Grants `AmazonS3FullAccess` and DynamoDB/SSM permissions to EC2 instances using temporary AWS STS credentials.
+  * Grants `AmazonS3FullAccess`, `AmazonDynamoDBFullAccess`, `AmazonSSMFullAccess`, and `AWSLambdaRole` permissions to EC2 instances using temporary AWS STS credentials (keyless authentication).
 * **EC2 Security Groups**:
   * Port 22 (SSH): Restricted terminal access.
   * Port 3000 (Custom TCP): Web application access.
@@ -132,4 +139,3 @@ The release workflow adheres to dual-branch Git governance (`develop` and `main`
 
 ## Conclusion
 The **BranchFlow** project successfully fulfills all requirements for an Agile-governed cloud release pipeline. By integrating **8 AWS cloud services** — Amazon EC2, Amazon S3, Amazon DynamoDB, AWS SSM Parameter Store, AWS Lambda, Amazon EventBridge, Amazon CloudWatch, and Amazon SNS — alongside shell script automation for automated EC2 deployments, the system provides a comprehensive, scalable, serverless-enhanced, and secure cloud web application architecture suitable for enterprise production deployment.
-
