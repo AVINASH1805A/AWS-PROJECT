@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Cloud Deployment and Release Governance - Final Project Report</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --primary-dark: #0f392b;
+            --primary-forest: #14532d;
+            --primary-emerald: #166534;
+            --primary-accent: #15803d;
+            --primary-light: #22c55e;
+            --bg-emerald-tint: #f0fdf4;
+            --bg-emerald-subtle: #f7fee7;
+            --surface: #ffffff;
+            --border-light: #dcfce7;
+            --border-medium: #86efac;
+            --text-main: #1e293b;
+            --text-muted: #475569;
+            --text-heading: #064e3b;
+            --shadow-sm: 0 1px 3px rgba(20, 83, 45, 0.08);
+            --shadow-md: 0 4px 12px rgba(20, 83, 45, 0.1);
+            --shadow-lg: 0 10px 25px rgba(20, 83, 45, 0.12);
+        }
+
+        @page {
+            size: A4;
+            margin: 18mm 16mm;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--text-main);
+            background: #f8fafc;
+            line-height: 1.65;
+            font-size: 13.5px;
+            padding: 30px 20px;
+        }
+
+        .report-wrapper {
+            max-width: 920px;
+            margin: 0 auto;
+            background: var(--surface);
+            padding: 45px 50px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Header Banner */
+        .report-header {
+            text-align: center;
+            padding-bottom: 25px;
+            border-bottom: 2.5px solid var(--primary-accent);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .report-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--primary-accent);
+            background: var(--bg-emerald-tint);
+            padding: 4px 14px;
+            border-radius: 9999px;
+            border: 1px solid var(--border-medium);
+            margin-bottom: 12px;
+        }
+
+        .report-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-heading);
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            line-height: 1.25;
+        }
+
+        .report-subtitle {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* Meta Information Card */
+        .meta-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            border: 1px solid var(--border-medium);
+            border-left: 5px solid var(--primary-accent);
+            border-radius: 8px;
+            padding: 18px 24px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px 24px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 140px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .meta-value {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--primary-forest);
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .badge-repo {
+            display: inline-block;
+            margin-top: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #065f46;
+            background: #ecfdf5;
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px dashed #6ee7b7;
+        }
+
+        .badge-repo a {
+            color: #047857;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .badge-repo a:hover {
+            text-decoration: underline;
+        }
+
+        /* Typography & Section Headings */
+        h2.sec-heading {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin: 32px 0 14px 0;
+            padding-bottom: 6px;
+            border-bottom: 1.5px solid var(--border-medium);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.01em;
+        }
+
+        h2.sec-heading::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background: var(--primary-accent);
+            border-radius: 3px;
+        }
+
+        h3.subsec-heading {
+            font-size: 14.5px;
+            font-weight: 600;
+            color: var(--primary-forest);
+            margin: 20px 0 8px 0;
+        }
+
+        p {
+            margin-bottom: 12px;
+            color: var(--text-main);
+            text-align: justify;
+        }
+
+        ol, ul {
+            margin: 10px 0 16px 22px;
+            color: var(--text-main);
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* Enhanced Tables with Green Theme */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin: 16px 0 24px 0;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-medium);
+        }
+
+        table.green-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 12.5px;
+            background: var(--surface);
+        }
+
+        table.green-table thead tr {
+            background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+            color: #ffffff;
+        }
+
+        table.green-table th {
+            padding: 10px 14px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border: none;
+        }
+
+        table.green-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        table.green-table tbody tr:nth-child(even) {
+            background-color: #fcfdfd;
+        }
+
+        table.green-table tbody tr:hover {
+            background-color: #f0fdf4;
+            transition: background 0.15s ease;
+        }
+
+        table.green-table td.strong-col {
+            font-weight: 600;
+            color: var(--primary-forest);
+        }
+
+        table.green-table td.status-col {
+            text-align: center;
+        }
+
+        .status-badge-achieved {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 11px;
+            border: 1px solid #86efac;
+        }
+
+        .status-badge-done {
+            display: inline-block;
+            background: #ecfdf5;
+            color: #047857;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 11px;
+            border: 1px solid #6ee7b7;
+        }
+
+        .status-badge-100 {
+            display: inline-block;
+            background: #14532d;
+            color: #ffffff;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        /* Figure Cards */
+        .figure-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 22px 0;
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        .figure-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .figure-caption {
+            font-size: 12px;
+            color: var(--primary-forest);
+            font-weight: 600;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .figure-caption span {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Code block */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: #0f5132;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Footer */
+        .report-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .report-footer a {
+            color: var(--primary-accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+                padding: 0;
+            }
+            .report-wrapper {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .figure-card {
+                page-break-inside: avoid;
+            }
+            table.green-table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="report-wrapper">
+
+    <!-- Header Section -->
+    <header class="report-header">
+        <div class="report-tag">R E P O R T</div>
+        <h1 class="report-title">AWS Cloud Deployment and Release Governance</h1>
+        <div class="report-subtitle">Agile-Governed Release Pipeline, Multi-Service AWS Integration and Serverless Automation</div>
+    </header>
+
+    <!-- Meta Information Card -->
+    <div class="meta-card">
+        <div class="meta-grid">
+            <div class="meta-item">
+                <span class="meta-label">Student Name:</span>
+                <span class="meta-value">Agarwal Avinash Atul Kumar</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Registration Number:</span>
+                <span class="meta-value">24MIS0024</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Course Title:</span>
+                <span class="meta-value">Agile Development and DevOps Lab (ISWE 406P)</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Professor:</span>
+                <span class="meta-value">Dr. Arunkumar A</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Review:</span>
+                <span class="meta-value">Final Review - Project Completion Report</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Overall Completion:</span>
+                <span class="meta-value"><span class="badge-pill badge-success">✓ 100% Complete</span></span>
+            </div>
+        </div>
+        <div class="badge-repo">
+            📦 GitHub Repository: <a href="https://github.com/AVINASH1805A/AWS-PROJECT" target="_blank">github.com/AVINASH1805A/AWS-PROJECT</a>
+        </div>
+    </div>
+
+    <!-- 1. Introduction -->
+    <h2 class="sec-heading">1. Introduction</h2>
+    <p>This project takes a cloud-hosted task management web application and releases it through an Agile-governed, automated pipeline on Amazon Web Services (AWS). Instead of pushing code straight to one server, the work is split into a Development environment and a Production environment controlled by the <code>develop</code> and <code>main</code> Git branches, so every change is tested before it reaches users.</p>
+    <p>The application is a Node.js and Express service running on Amazon EC2, integrated with eight AWS capabilities: EC2 for compute, a shell-based deployment pipeline, S3 for backups, DynamoDB for persistence, Systems Manager Parameter Store for configuration, IAM for keyless security, CloudWatch with SNS for monitoring and alerts, and Lambda with EventBridge for serverless scheduled maintenance.</p>
+    <p>This report presents the final status of the project. All planned work is complete: both environments are deployed, the release script is automated, data is persisted and backed up in the cloud, monitoring is active, and the application is running and reachable. The project is 100% complete.</p>
+
+    <!-- 2. Objectives and Outcomes -->
+    <h2 class="sec-heading">2. Objectives and Outcomes</h2>
+    <div class="table-responsive">
+        <table class="green-table">
+            <thead>
+                <tr>
+                    <th style="width: 28%;">Objective</th>
+                    <th style="width: 57%;">Outcome</th>
+                    <th style="width: 15%; text-align: center;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="strong-col">Separate Dev and Prod environments</td>
+                    <td><code>dev-server</code> runs the <code>develop</code> branch and <code>prod-server</code> runs the <code>main</code> branch on two EC2 instances.</td>
+                    <td class="status-col"><span class="status-badge-achieved">Achieved</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Automate releases</td>
+                    <td><code>deploy.sh</code> pulls the branch, installs dependencies and restarts the app with one command.</td>
+                    <td class="status-col"><span class="status-badge-achieved">Achieved</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Persist data in the cloud</td>
+                    <td>Tasks are stored in a DynamoDB table in real time.</td>
+                    <td class="status-col"><span class="status-badge-achieved">Achieved</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Back up data</td>
+                    <td>A timestamped JSON backup is written to S3 on every change.</td>
+                    <td class="status-col"><span class="status-badge-achieved">Achieved</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Centralise configuration</td>
+                    <td>The server reads its settings from SSM Parameter Store.</td>
+                    <td class="status-col"><span class="status-badge-achieved">Achieved</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Secure access without keys</td>
+                    <td>EC2 uses an IAM role with temporary STS credentials.</td>
+                    <td class="status-col"><span class="status-badge-achieved">Achieved</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Monitor and alert</td>
+                    <td>A CloudWatch alarm on prod CPU above 70% emails the engineer through SNS.</td>
+                    <td class="status-col"><span class="status-badge-achieved">Achieved</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Automate maintenance</td>
+                    <td>Lambda, triggered nightly by EventBridge, purges completed tasks.</td>
+                    <td class="status-col"><span class="status-badge-achieved">Achieved</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 3. Technology Stack -->
+    <h2 class="sec-heading">3. Technology Stack</h2>
+    <div class="table-responsive">
+        <table class="green-table">
+            <thead>
+                <tr>
+                    <th style="width: 32%;">Layer</th>
+                    <th style="width: 68%;">Technology</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="strong-col">Application</td>
+                    <td>Node.js, Express, AWS SDK v3, HTML/CSS/JavaScript front end</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Compute</td>
+                    <td>Amazon EC2 (Ubuntu, t2.micro), two instances</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Storage and database</td>
+                    <td>Amazon S3 (backups), Amazon DynamoDB (on-demand capacity)</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Configuration and security</td>
+                    <td>AWS Systems Manager Parameter Store, AWS IAM role with STS credentials</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Monitoring</td>
+                    <td>Amazon CloudWatch alarm, Amazon SNS email notification</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Automation</td>
+                    <td>Shell script <code>deploy.sh</code>, AWS Lambda (Node.js), Amazon EventBridge cron rule</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Process and version control</td>
+                    <td>Git, GitHub, Agile Scrum with Sprint 2 backlog</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 4. System Architecture -->
+    <h2 class="sec-heading">4. System Architecture</h2>
+    <p>Users reach the web application over HTTP on port 3000 of an EC2 instance. The Express server serves the user interface and exposes a REST API for tasks, health checks, backups and the Lambda cleanup trigger. It uses the AWS SDK v3 to talk to S3, DynamoDB and SSM, authenticating through the IAM role attached to the instance. The developer pushes code to GitHub; the <code>develop</code> and <code>main</code> branches are deployed to <code>dev-server</code> and <code>prod-server</code> with <code>deploy.sh</code>. Monitoring and the nightly cleanup run alongside the application in the AWS Sydney region (<code>ap-southeast-2</code>).</p>
+
+    <div class="figure-card">
+        <img src="report_images/image1.jpeg" alt="Figure 1: System architecture and delivery path">
+        <div class="figure-caption">Figure 1: <span>System architecture and delivery path</span></div>
+    </div>
+
+    <h3 class="subsec-heading">4.1 Data flow for every task action</h3>
+    <ol>
+        <li>The Express backend receives the task payload from the browser.</li>
+        <li>The task is saved locally to <code>data/tasks.json</code>, which gives instant offline resilience.</li>
+        <li>A <code>PutItem</code> request stores the task in the DynamoDB table in real time.</li>
+        <li>A <code>PutObject</code> request writes a timestamped JSON backup file to the S3 bucket.</li>
+        <li><strong>Nightly maintenance</strong>: EventBridge triggers Lambda at 00:00 UTC. Lambda queries DynamoDB for completed tasks and batch-deletes them. The same cleanup can be started on demand from the application.</li>
+    </ol>
+
+    <!-- 5. Agile Governance and Deployment Automation -->
+    <h2 class="sec-heading">5. Agile Governance and Deployment Automation</h2>
+
+    <h3 class="subsec-heading">5.1 Git branching and sprint backlog</h3>
+    <p>Development follows Scrum. Each feature starts as a user story, is built on a feature branch, merged into <code>develop</code> and tested on the Dev EC2 instance. After the sprint review and QA pass, the change is merged into <code>main</code> and deployed to the Production EC2 instance. This keeps experimental code away from end users.</p>
+
+    <div class="table-responsive">
+        <table class="green-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Story</th>
+                    <th style="width: 60%;">Description</th>
+                    <th style="width: 15%; text-align: center;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="strong-col">STORY-201</td>
+                    <td>S3 cloud backup engine</td>
+                    <td class="status-col"><span class="status-badge-done">Done</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">STORY-202</td>
+                    <td>Zero-downtime release script (<code>deploy.sh</code>)</td>
+                    <td class="status-col"><span class="status-badge-done">Done</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">STORY-203</td>
+                    <td>CloudWatch CPU alarm with SNS email alerts</td>
+                    <td class="status-col"><span class="status-badge-done">Done</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">STORY-204</td>
+                    <td>Dev and Production environment badge</td>
+                    <td class="status-col"><span class="status-badge-done">Done</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">STORY-205</td>
+                    <td>Keyless IAM role security</td>
+                    <td class="status-col"><span class="status-badge-done">Done</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">STORY-206</td>
+                    <td>Real-time DynamoDB synchronisation</td>
+                    <td class="status-col"><span class="status-badge-done">Done</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">STORY-207</td>
+                    <td>SSM Parameter Store configuration</td>
+                    <td class="status-col"><span class="status-badge-done">Done</span></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">STORY-208</td>
+                    <td>Lambda and EventBridge nightly cleanup</td>
+                    <td class="status-col"><span class="status-badge-done">Done</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="subsec-heading">5.2 Release script: deploy.sh</h3>
+    <p>A release is one command, <code>./deploy.sh &lt;branch&gt;</code>, where the branch is <code>develop</code> or <code>main</code>. The script performs these steps:</p>
+    <ul>
+        <li>Runs <code>git fetch</code> and <code>git reset --hard</code> to the chosen branch, which avoids merge conflicts on the server.</li>
+        <li>Runs <code>npm install --production</code> to update dependencies.</li>
+        <li>Stops the old Node.js process and starts a new one with <code>nohup</code>, so the app keeps running after the SSH session closes.</li>
+        <li>Appends a timestamped entry to <code>deploy.log</code> as an audit trail.</li>
+    </ul>
+
+    <div class="figure-card">
+        <img src="report_images/image1.png" alt="deploy.sh code view in GitHub repository">
+        <div class="figure-caption"><span>Automated release deployment script (deploy.sh) in GitHub repository</span></div>
+    </div>
+
+    <!-- 6. Cloud Infrastructure on AWS -->
+    <h2 class="sec-heading">6. Cloud Infrastructure on AWS</h2>
+
+    <h3 class="subsec-heading">6.1 Amazon EC2</h3>
+    <p>Two <code>t2.micro</code> Ubuntu instances run in the Sydney region: <code>dev-server</code> for the <code>develop</code> branch and <code>prod-server</code> for the <code>main</code> branch. The security group allows port 22 for SSH administration with a key pair and port 3000 for application traffic. All other ports are closed.</p>
+
+    <div class="figure-card">
+        <img src="report_images/image2.png" alt="Figure 2: EC2 console showing dev-server and prod-server">
+        <div class="figure-caption">Figure 2: <span>EC2 console showing dev-server and prod-server</span></div>
+    </div>
+
+    <div class="figure-card">
+        <img src="report_images/image3.png" alt="Figure 3: SSH session into the EC2 server">
+        <div class="figure-caption">Figure 3: <span>SSH session into the EC2 server</span></div>
+    </div>
+
+    <h3 class="subsec-heading">6.2 Amazon DynamoDB</h3>
+    <p>A DynamoDB table with the partition key <code>id</code> (String) stores all tasks. It uses on-demand capacity, so there is no capacity planning, patching or cluster management. Keeping data in a managed service separates storage from compute and avoids a single point of failure on the EC2 instance.</p>
+
+    <div class="figure-card">
+        <img src="report_images/image4.png" alt="Figure 4: DynamoDB tasks table created and active">
+        <div class="figure-caption">Figure 4: <span>DynamoDB tasks table created and active</span></div>
+    </div>
+
+    <h3 class="subsec-heading">6.3 Amazon S3</h3>
+    <p>A bucket in the Sydney region stores a timestamped JSON snapshot of the task list each time a task is added, updated or deleted. Objects are never overwritten, so any earlier state can be restored. S3 offers 99.999999999% durability, which supports disaster recovery.</p>
+
+    <div class="figure-card">
+        <img src="report_images/image5.png" alt="Figure 5: S3 bucket in the Asia Pacific (Sydney) region">
+        <div class="figure-caption">Figure 5: <span>S3 bucket in the Asia Pacific (Sydney) region</span></div>
+    </div>
+
+    <div class="figure-card">
+        <img src="report_images/image6.png" alt="Figure 6: Bucket containing the backups folder">
+        <div class="figure-caption">Figure 6: <span>Bucket containing the backups folder</span></div>
+    </div>
+
+    <div class="figure-card">
+        <img src="report_images/image7.png" alt="Figure 7: Timestamped JSON backup files created by the application">
+        <div class="figure-caption">Figure 7: <span>Timestamped JSON backup files created by the application</span></div>
+    </div>
+
+    <h3 class="subsec-heading">6.4 AWS Lambda and Amazon EventBridge</h3>
+    <p>A Node.js Lambda function (128 MB memory) scans DynamoDB for completed tasks and deletes them in batches. An EventBridge schedule rule with the expression <code>cron(0 0 * * ? *)</code> invokes it every day at midnight UTC. Running the cleanup serverless means no always-on server is needed, and the cost stays within the free tier.</p>
+
+    <div class="figure-card">
+        <img src="report_images/image8.png" alt="Figure 8: Lambda function with its EventBridge schedule trigger">
+        <div class="figure-caption">Figure 8: <span>Lambda function with its EventBridge schedule trigger</span></div>
+    </div>
+
+    <h3 class="subsec-heading">6.5 IAM and Systems Manager Parameter Store</h3>
+    <p><strong>IAM role</strong>: the instances use the <code>EC2-S3-Access</code> role, which carries the S3, DynamoDB, SSM and Lambda policies the app needs and provides temporary STS credentials through instance metadata. No access key or secret key is stored in the code or in GitHub.</p>
+    <p><strong>SSM Parameter Store</strong>: environment settings are read from a central store rather than hardcoded, so configuration can change without redeploying code or logging into the server.</p>
+
+    <div class="figure-card">
+        <img src="report_images/image9.png" alt="IAM roles console showing keyless instance role">
+        <div class="figure-caption"><span>IAM roles console showing keyless EC2 instance role architecture</span></div>
+    </div>
+
+    <h3 class="subsec-heading">6.6 Amazon CloudWatch and Amazon SNS</h3>
+    <p>The alarm <code>prod-server-high-cpu-alarm</code> watches the <code>CPUUtilization</code> metric (AWS/EC2 namespace, average statistic) of the production instance. When the CPU goes above 70% within a 5-minute period, the alarm publishes to the SNS topic <code>ec2-high-cpu-alert</code>, whose email subscription notifies the engineer before users are affected. The figure shows the alarm in its normal OK state with actions enabled.</p>
+
+    <div class="figure-card">
+        <img src="report_images/image10.png" alt="Figure 9: CloudWatch alarm for production CPU utilisation">
+        <div class="figure-caption">Figure 9: <span>CloudWatch alarm for production CPU utilisation</span></div>
+    </div>
+
+    <!-- 7. Deployed Application -->
+    <h2 class="sec-heading">7. Deployed Application</h2>
+    <p>The web application shows its environment (<code>PRODUCTION</code> or <code>DEV</code>) in the header, with live status badges for S3, DynamoDB, SSM and Lambda. Users add tasks with a category and priority; each change is synced to DynamoDB and backed up to S3. A <strong>Manual S3 Backup</strong> button and a <strong>Run Lambda Nightly Cleanup</strong> button are included for demonstration.</p>
+
+    <div class="figure-card">
+        <img src="report_images/image11.png" alt="Figure 10: Production application running on EC2">
+        <div class="figure-caption">Figure 10: <span>Production application running on EC2</span></div>
+    </div>
+
+    <!-- 8. Challenges and Resolutions -->
+    <h2 class="sec-heading">8. Challenges and Resolutions</h2>
+    <div class="table-responsive">
+        <table class="green-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Challenge</th>
+                    <th style="width: 40%;">Cause</th>
+                    <th style="width: 35%;">Resolution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="strong-col">SSH access failure</td>
+                    <td>The key pair was not in the expected folder and its permissions were too open.</td>
+                    <td>Moved the key to <code>~/.ssh</code> and restricted it with <code>chmod 400</code>.</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Changing public IP</td>
+                    <td>AWS releases the dynamic public IPv4 address when an instance is stopped.</td>
+                    <td>Use the new address after restart; plan an Elastic IP or a load balancer with Route 53 for production.</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Cloud service outage risk</td>
+                    <td>S3 or DynamoDB calls can fail if AWS is unreachable.</td>
+                    <td>Wrapped cloud calls in error handling and fall back to local <code>tasks.json</code> storage.</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Credential exposure risk</td>
+                    <td>Access keys in code can leak through a repository.</td>
+                    <td>Attached an IAM role with STS credentials and moved settings to SSM.</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Database bloat</td>
+                    <td>Completed tasks accumulate and raise storage and read costs.</td>
+                    <td>Added a Lambda cleanup job scheduled nightly by EventBridge.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 9. Project Completion Summary -->
+    <h2 class="sec-heading">9. Project Completion Summary</h2>
+    <div class="table-responsive">
+        <table class="green-table">
+            <thead>
+                <tr>
+                    <th style="width: 32%;">Work Area</th>
+                    <th style="width: 18%; text-align: center;">Completion</th>
+                    <th style="width: 50%;">Outcome</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="strong-col">Application</td>
+                    <td class="status-col"><span class="status-badge-100">100%</span></td>
+                    <td>Node.js and Express app serving the web UI and REST API</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Environment separation</td>
+                    <td class="status-col"><span class="status-badge-100">100%</span></td>
+                    <td>Dev and Prod EC2 instances tied to <code>develop</code> and <code>main</code></td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Deployment automation</td>
+                    <td class="status-col"><span class="status-badge-100">100%</span></td>
+                    <td>One-command release with <code>deploy.sh</code> and audit log</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Data persistence and backup</td>
+                    <td class="status-col"><span class="status-badge-100">100%</span></td>
+                    <td>DynamoDB storage and timestamped S3 backups</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Security and configuration</td>
+                    <td class="status-col"><span class="status-badge-100">100%</span></td>
+                    <td>Keyless IAM role and SSM Parameter Store</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Monitoring and alerting</td>
+                    <td class="status-col"><span class="status-badge-100">100%</span></td>
+                    <td>CloudWatch CPU alarm with SNS email</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Serverless automation</td>
+                    <td class="status-col"><span class="status-badge-100">100%</span></td>
+                    <td>Lambda cleanup triggered nightly by EventBridge</td>
+                </tr>
+                <tr>
+                    <td class="strong-col">Documentation and presentation</td>
+                    <td class="status-col"><span class="status-badge-100">100%</span></td>
+                    <td>Report and presentation complete</td>
+                </tr>
+                <tr style="background: #f0fdf4; font-weight: bold;">
+                    <td style="color: #14532d;">Overall</td>
+                    <td class="status-col"><span class="status-badge-100">100%</span></td>
+                    <td style="color: #14532d;">Project complete</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="figure-card">
+        <img src="report_images/image12.png" alt="Figure 11: Completion by work area">
+        <div class="figure-caption">Figure 11: <span>Completion by work area (100% overall achievement)</span></div>
+    </div>
+
+    <!-- 10. Key Learnings -->
+    <h2 class="sec-heading">10. Key Learnings</h2>
+    <ul>
+        <li><strong>Separate Dev and Prod environments</strong> with branch governance keep untested code away from users.</li>
+        <li><strong>Managed services</strong> such as DynamoDB, S3 and Lambda remove server and database maintenance.</li>
+        <li><strong>Keyless IAM roles</strong> are safer than stored access keys.</li>
+        <li><strong>Alarms and notifications</strong> give early warning before users notice a problem.</li>
+        <li><strong>Graceful fallbacks</strong> keep an application available when a cloud service is unreachable.</li>
+    </ul>
+
+    <!-- 11. Conclusion -->
+    <h2 class="sec-heading">11. Conclusion</h2>
+    <p>The project demonstrates end-to-end cloud engineering: Git branch governance, automated EC2 deployment, and integration of eight AWS capabilities for persistence, security, monitoring and serverless automation. All objectives were achieved, both environments are running, and the source code is available in the GitHub repository.</p>
+
+    <footer class="report-footer">
+        <div><strong>Source Code Repository:</strong> <a href="https://github.com/AVINASH1805A/AWS-PROJECT" target="_blank">https://github.com/AVINASH1805A/AWS-PROJECT</a></div>
+        <div style="margin-top: 5px;">Agile Development and DevOps Lab (ISWE 406P) • Final Review Report</div>
+    </footer>
+
+</div>
+
+</body>
+</html>
